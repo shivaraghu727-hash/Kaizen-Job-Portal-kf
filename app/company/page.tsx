@@ -535,11 +535,11 @@ export default function CompanyPage() {
 
         <div className="container mx-auto max-w-4xl py-8">
           <Button
-            onClick={() => setCurrentView("form")}
-            className="inline-flex items-center text-primary hover:text-primary/80 mb-6 group"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
-            Back to Form
+          onClick={() => setCurrentView("form")}
+          className="inline-flex items-center text-white hover:text-white/80 mb-6 group"
+            >
+        <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
+          Back to Form
           </Button>
 
           <Card className="shadow-xl border-0 bg-card/50 backdrop-blur-sm">
