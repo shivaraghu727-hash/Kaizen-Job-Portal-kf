@@ -54,7 +54,8 @@ export default function JobDetailsPage() {
   const loadJobDetails = async (jobId: string) => {
     try {
       setLoading(true)
-      const response = await fetch(`/api/jobs/${jobId}`)
+      const response = await fetch(`/api/jobs?jobId=${jobId}`, { cache: "no-store" }) // ✅ CORRECT
+
       const result = await response.json()
 
       if (result.success && result.job) {
