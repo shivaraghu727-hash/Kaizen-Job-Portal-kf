@@ -11,7 +11,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import {
   Building2,
@@ -90,13 +89,12 @@ interface Job {
 }
 
 export default function CompanyPage() {
-  const [currentView, setCurrentView] = useState<"form" | "dashboard">("form")
+  const [currentView, setCurrentView] = useState<"form" | "dashboard" | "preview">("form")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [jobs, setJobs] = useState<Job[]>([])
   const [isListening, setIsListening] = useState(false)
   const [voiceSupported, setVoiceSupported] = useState(false)
   const [qrLoading, setQrLoading] = useState<string | null>(null)
-  const [showPreview, setShowPreview] = useState(false)
   const recognitionRef = useRef<any>(null)
   const { toast } = useToast()
 
@@ -525,6 +523,104 @@ export default function CompanyPage() {
       title: "Testing QR Code",
       description: `Opening job page for "${jobTitle}" in new tab.`,
     })
+  }
+
+  // Preview Page
+  if (currentView === "preview") {
+    return (
+      <div className="min-h-screen bg-background p-4">
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
+
+        <div className="container mx-auto max-w-4xl py-8">
+          <Button
+            onClick={() => setCurrentView("form")}
+            className="inline-flex items-center text-primary hover:text-primary/80 mb-6 group"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
+            Back to Form
+          </Button>
+
+          <Card className="shadow-xl border-0 bg-card/50 backdrop-blur-sm">
+            <CardHeader>
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Building2 className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <CardTitle className="text-2xl">Form Preview</CardTitle>
+                  <CardDescription>Review your company and job details</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* Company Information Section */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-foreground flex items-center">
+                    <Building2 className="w-5 h-5 mr-2" />
+                    Company Information
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="companyName">Company Name</Label>
+                      <p className="text-sm text-foreground">{companyData.companyName || "Not provided"}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="contactPersonName">Contact Person Name</Label>
+                      <p className="text-sm text-foreground">{companyData.contactPersonName || "Not provided"}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Company Email</Label>
+                      <p className="text-sm text-foreground">{companyData.email || "Not provided"}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="contactPersonNumber">Contact Person Number</Label>
+                      <p className="text-sm text-foreground">{companyData.contactPersonNumber || "Not provided"}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Job Information Section */}
+                <div className="space-y-4 border-t border-border pt-6">
+                  <h3 className="text-lg font-semibold text-foreground flex items-center">
+                    <Briefcase className="w-5 h-5 mr-2" />
+                    Job Information
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="title">Job Title</Label>
+                      <p className="text-sm text-foreground">{jobData.title || "Not provided"}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="jobType">Job Type</Label>
+                      <p className="text-sm text-foreground">{jobData.jobType || "Not provided"}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="location">Location</Label>
+                      <p className="text-sm text-foreground">{jobData.location || "Not provided"}</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="salary">Salary Range</Label>
+                      <p className="text-sm text-foreground">{jobData.salary || "Not provided"}</p>
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="keySkills">Key Skills</Label>
+                      <p className="text-sm text-foreground">{jobData.keySkills || "Not provided"}</p>
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="description">Job Description</Label>
+                      <p className="text-sm text-foreground whitespace-pre-wrap">{jobData.description || "Not provided"}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
   }
 
   if (currentView === "dashboard") {
@@ -998,81 +1094,6 @@ export default function CompanyPage() {
                   </div>
                 </div>
 
-                {/* Preview Modal */}
-                <Dialog open={showPreview} onOpenChange={setShowPreview}>
-                  <DialogContent className="sm:max-w-lg md:max-w-2xl bg-card/90 backdrop-blur-lg rounded-2xl">
-                    <DialogHeader>
-                      <DialogTitle className="text-2xl font-bold">Form Preview</DialogTitle>
-                      <DialogDescription className="text-base text-muted-foreground">
-                        Review your company and job details before submitting.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-6 p-6">
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-foreground flex items-center">
-                          <Building2 className="w-5 h-5 mr-2" />
-                          Company Information
-                        </h3>
-                        <div className="grid grid-cols-1 gap-4">
-                          <div>
-                            <Label className="text-base font-medium">Company Name</Label>
-                            <p className="text-base text-foreground">{companyData.companyName || "Not provided"}</p>
-                          </div>
-                          <div>
-                            <Label className="text-base font-medium">Contact Person Name</Label>
-                            <p className="text-base text-foreground">{companyData.contactPersonName || "Not provided"}</p>
-                          </div>
-                          <div>
-                            <Label className="text-base font-medium">Company Email</Label>
-                            <p className="text-base text-foreground">{companyData.email || "Not provided"}</p>
-                          </div>
-                          <div>
-                            <Label className="text-base font-medium">Contact Person Number</Label>
-                            <p className="text-base text-foreground">{companyData.contactPersonNumber || "Not provided"}</p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="space-y-4 border-t border-border pt-6">
-                        <h3 className="text-lg font-semibold text-foreground flex items-center">
-                          <Briefcase className="w-5 h-5 mr-2" />
-                          Job Information
-                        </h3>
-                        <div className="grid grid-cols-1 gap-4">
-                          <div>
-                            <Label className="text-base font-medium">Job Title</Label>
-                            <p className="text-base text-foreground">{jobData.title || "Not provided"}</p>
-                          </div>
-                          <div>
-                            <Label className="text-base font-medium">Job Type</Label>
-                            <p className="text-base text-foreground">{jobData.jobType || "Not provided"}</p>
-                          </div>
-                          <div>
-                            <Label className="text-base font-medium">Location</Label>
-                            <p className="text-base text-foreground">{jobData.location || "Not provided"}</p>
-                          </div>
-                          <div>
-                            <Label className="text-base font-medium">Salary Range</Label>
-                            <p className="text-base text-foreground">{jobData.salary || "Not provided"}</p>
-                          </div>
-                          <div>
-                            <Label className="text-base font-medium">Key Skills</Label>
-                            <p className="text-base text-foreground">{jobData.keySkills || "Not provided"}</p>
-                          </div>
-                          <div>
-                            <Label className="text-base font-medium">Job Description</Label>
-                            <p className="text-base text-foreground whitespace-pre-wrap">{jobData.description || "Not provided"}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button onClick={() => setShowPreview(false)} variant="outline" className="h-10 px-6 text-base">
-                        Close
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-
                 {/* Submit Buttons */}
                 <div className="flex justify-end space-x-4 pt-6 border-t border-border">
                   <Button type="button" variant="outline" onClick={clearForm} disabled={isSubmitting}>
@@ -1081,7 +1102,7 @@ export default function CompanyPage() {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => setShowPreview(true)}
+                    onClick={() => setCurrentView("preview")}
                     disabled={isSubmitting}
                     className="flex items-center"
                   >
