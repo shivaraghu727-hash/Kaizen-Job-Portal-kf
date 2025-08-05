@@ -32,10 +32,45 @@ import {
   ExternalLink,
   Copy,
   Loader2,
+  Edit,
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { ThemeToggle } from "@/components/theme-toggle"
+
+// Define roles from Roles.xlsx
+const ROLES = [
+  "Agile Coach", "AI Engineer", "AI Research Scientist", "AI Solutions Architect", "Application Developer",
+  "Assembly Line Worker", "Automation Tester", "Back-End Developer", "Bank Teller", "Big Data Engineer",
+  "Business Analyst", "Change Management Specialist", "Clinical Research Associate", "Cloud Administrator",
+  "Cloud Developer", "Cloud Security Engineer", "Cloud Solutions Architect", "CNC Machinist",
+  "Compliance Analyst", "Compliance Engineer", "Computer Vision Engineer", "Conversational AI Designer",
+  "Corporate Loan Analyst", "Credit Officer", "Cybersecurity Analyst", "Cybersecurity Consultant",
+  "Data Analyst", "Data Engineer", "Data Scientist", "Data Warehouse Developer", "Database Administrator",
+  "Database Engineer", "Deep Learning Engineer", "Desktop Application Developer", "DevOps Engineer",
+  "Digital Marketing Specialist", "Digital Transformation Lead", "Documentation Specialist",
+  "Electronics Design Engineer", "Electronics QA Inspector", "Embedded Software Engineer",
+  "Enterprise Architect", "Ethical Hacker", "Front-End Developer", "Front-End Web Engineer",
+  "Full-Stack Developer", "Game Developer", "Health & Safety Officer", "Healthcare Administrator",
+  "Incident Responder", "Interaction Designer", "Inventory Control Manager", "IT Account Manager",
+  "IT Auditor", "IT Consultant", "IT Manager", "IT Operations Engineer", "IT Risk Analyst",
+  "IT Strategy Consultant", "IT Support Specialist", "Logistics Coordinator", "Machine Learning Engineer",
+  "Maintenance Technician", "Market Access Specialist", "Medical Records Technician",
+  "Medical Sales Representative", "Medical Technologist", "Mobile App Developer", "Network Administrator",
+  "Network Engineer", "NLP Engineer", "Patient Care Coordinator", "Penetration Tester",
+  "Performance Tester", "Pharmacovigilance Specialist", "Physician Assistant", "Physiotherapist",
+  "Pre-Sales Consultant", "Process Consultant", "Process Engineer", "Procurement Specialist",
+  "Product Manager", "Production Operator", "Production Planner", "Production Supervisor",
+  "Project Manager", "Prototyping Specialist", "QA Analyst", "QA Engineer", "Quality Control Analyst",
+  "Quality Inspector", "Quantitative Analyst", "Radiology Technician", "Regulatory Affairs Specialist",
+  "Relationship Manager", "Reliability Engineer", "Research Scientist", "Scrum Master",
+  "Security Architect", "Security Engineer", "Site Reliability Engineer", "Software Architect",
+  "Software Tester", "Solutions Consultant", "Speech-Language Pathologist", "SQL Developer",
+  "Staff Nurse", "Supply Chain Specialist", "System Administrator", "Systems Analyst",
+  "Technical Product Manager", "Technical Sales Engineer", "Technical Writer", "Technology Analyst",
+  "Test Automation Engineer", "UI Developer", "UI/UX Researcher", "UX Designer", "UX Engineer",
+  "Vulnerability Analyst", "Web Developer"
+]
 
 interface Job {
   id: string
@@ -172,11 +207,20 @@ export default function CompanyPage() {
     }
 
     // Extract job title
-    const jobTitleMatch = text.match(
+    const jobTitlePatterns = [
       /(?:hiring for|looking for|need|want|seeking|recruiting|position for|role for|job for|opening for) ([^,.]+)/i,
-    )
-    if (jobTitleMatch) {
-      setJobData((prev) => ({ ...prev, title: jobTitleMatch[1].trim() }))
+      /(?:we need|we want|we are looking for) ([^,.]+)/i,
+    ]
+
+    for (const pattern of jobTitlePatterns) {
+      const match = text.match(pattern)
+      if (match) {
+        const spokenTitle = match[1].trim()
+        // Find closest matching role from ROLES
+        const matchedRole = ROLES.find((role) => role.toLowerCase().includes(spokenTitle.toLowerCase()))
+        setJobData((prev) => ({ ...prev, title: matchedRole || spokenTitle }))
+        break
+      }
     }
 
     // Extract location
@@ -273,7 +317,7 @@ export default function CompanyPage() {
       if (!companyData.companyName || !companyData.contactPersonName || !companyData.email) {
         toast({
           title: "Missing Information",
-          description: "Please fill in all required fields.",
+          description: "Please fill in all required company fields.",
           variant: "destructive",
         })
         setIsSubmitting(false)
@@ -303,7 +347,7 @@ export default function CompanyPage() {
         })
 
         // If job data is filled, also post the job
-        if (jobData.title && jobData.description) {
+        if (jobData.title && jobData.description && jobData.jobType && jobData.location && jobData.keySkills && jobData.salary) {
           await handleJobPost()
         }
 
@@ -326,6 +370,10 @@ export default function CompanyPage() {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const handleEditCompany = () => {
+    setCurrentView("form")
   }
 
   const loadCompanyJobs = async (email: string) => {
@@ -495,21 +543,9 @@ export default function CompanyPage() {
                 <Plus className="w-4 h-4 mr-2" />
                 Post New Job
               </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  localStorage.removeItem("companyData")
-                  setCurrentView("form")
-                  setCompanyData({
-                    companyName: "",
-                    contactPersonName: "",
-                    contactPersonNumber: "",
-                    email: "",
-                  })
-                  setJobs([])
-                }}
-              >
-                Switch Company
+              <Button onClick={handleEditCompany} variant="outline">
+                <Edit className="w-4 h-4 mr-2" />
+                Edit Company Details
               </Button>
             </div>
           </div>
@@ -876,13 +912,22 @@ export default function CompanyPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="title">Job Title *</Label>
-                      <Input
-                        id="title"
+                      <Select
                         value={jobData.title}
-                        onChange={(e) => setJobData((prev) => ({ ...prev, title: e.target.value }))}
-                        placeholder="e.g. Software Developer Intern"
+                        onValueChange={(value) => setJobData((prev) => ({ ...prev, title: value }))}
                         required
-                      />
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select job title" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-60 overflow-y-auto">
+                          {ROLES.map((role) => (
+                            <SelectItem key={role} value={role}>
+                              {role}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="space-y-2">
@@ -969,7 +1014,7 @@ export default function CompanyPage() {
                     ) : (
                       <>
                         <CheckCircle className="w-4 h-4 mr-2" />
-                        Register & Post Job
+                        {companyData.companyName ? "Update Company & Post Job" : "Register & Post Job"}
                       </>
                     )}
                   </Button>
