@@ -26,9 +26,10 @@ export async function POST(request: NextRequest) {
     const jobId = `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
     // Generate QR code URL that points to student assessment with job ID
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
-    const studentUrl = `${baseUrl}/student?jobId=${jobId}`
-    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(studentUrl)}`
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const studentUrl = `${baseUrl}/student?jobId=${encodeURIComponent(jobId)}`;
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(studentUrl)}`;
+
 
     const jobData = {
       id: jobId,
