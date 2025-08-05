@@ -32,7 +32,6 @@ import {
   ExternalLink,
   Copy,
   Loader2,
-  Edit,
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -89,7 +88,6 @@ interface Job {
 }
 
 export default function CompanyPage() {
-  const [currentView, setCurrentView] = useState<"form" | "dashboard">("form")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [jobs, setJobs] = useState<Job[]>([])
   const [isListening, setIsListening] = useState(false)
@@ -149,15 +147,6 @@ export default function CompanyPage() {
       recognitionRef.current.onend = () => {
         setIsListening(false)
       }
-    }
-
-    // Load existing company data from localStorage
-    const savedCompanyData = localStorage.getItem("companyData")
-    if (savedCompanyData) {
-      const parsed = JSON.parse(savedCompanyData)
-      setCompanyData(parsed)
-      setCurrentView("dashboard")
-      loadCompanyJobs(parsed.email)
     }
   }, [toast])
 
@@ -351,8 +340,7 @@ export default function CompanyPage() {
           await handleJobPost()
         }
 
-        setCurrentView("dashboard")
-        await loadCompanyJobs(companyData.email)
+        clearForm() // Reset form after successful registration and job post
       } else {
         toast({
           title: "Registration Failed",
@@ -369,35 +357,6 @@ export default function CompanyPage() {
       })
     } finally {
       setIsSubmitting(false)
-    }
-  }
-
-  const handleEditCompany = () => {
-    setCurrentView("form")
-  }
-
-  const loadCompanyJobs = async (email: string) => {
-    try {
-      const response = await fetch(`/api/jobs?email=${encodeURIComponent(email)}`)
-      const result = await response.json()
-      if (result.success) {
-        // Process jobs to ensure proper URLs
-        const jobsWithUrls = (result.jobs || []).map((job: Job) => {
-          const baseUrl =
-            typeof window !== "undefined" ? window.location.origin : "https://kaizen-job-portal.vercel.app"
-          const studentUrl = `${baseUrl}/job/${job.id}`
-          const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(studentUrl)}&format=png&bgcolor=FFFFFF&color=000000&qzone=2&margin=10&ecc=M`
-
-          return {
-            ...job,
-            student_url: studentUrl,
-            qr_code_url: qrCodeUrl,
-          }
-        })
-        setJobs(jobsWithUrls)
-      }
-    } catch (error) {
-      console.error("Error loading jobs:", error)
     }
   }
 
@@ -451,8 +410,6 @@ export default function CompanyPage() {
           keySkills: "",
           salary: "",
         })
-
-        await loadCompanyJobs(companyData.email)
       } else {
         toast({
           title: "Job Posting Failed",
@@ -523,218 +480,6 @@ export default function CompanyPage() {
       title: "Testing QR Code",
       description: `Opening job page for "${jobTitle}" in new tab.`,
     })
-  }
-
-  if (currentView === "dashboard") {
-    return (
-      <div className="min-h-screen bg-background p-4">
-        <div className="absolute top-4 right-4">
-          <ThemeToggle />
-        </div>
-
-        <div className="container mx-auto max-w-6xl py-8">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">Company Dashboard</h1>
-              <p className="text-muted-foreground">Manage your job postings and view applications</p>
-            </div>
-            <div className="flex space-x-4">
-              <Button onClick={() => setCurrentView("form")} className="bg-primary hover:bg-primary/90">
-                <Plus className="w-4 h-4 mr-2" />
-                Post New Job
-              </Button>
-              <Button onClick={handleEditCompany} variant="outline">
-                <Edit className="w-4 h-4 mr-2" />
-                Edit Company Details
-              </Button>
-            </div>
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-8">
-            {/* Company Info */}
-            <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Building2 className="w-5 h-5 mr-2" />
-                  Company Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <Building2 className="w-4 h-4 text-muted-foreground" />
-                  <span className="font-medium">{companyData.companyName}</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <User className="w-4 h-4 text-muted-foreground" />
-                  <span>{companyData.contactPersonName}</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Mail className="w-4 h-4 text-muted-foreground" />
-                  <span>{companyData.email}</span>
-                </div>
-                {companyData.contactPersonNumber && (
-                  <div className="flex items-center space-x-3">
-                    <Phone className="w-4 h-4 text-muted-foreground" />
-                    <span>{companyData.contactPersonNumber}</span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Posted Jobs */}
-            <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center">
-                    <QrCode className="w-5 h-5 mr-2" />
-                    Posted Jobs
-                  </CardTitle>
-                  <Badge variant="secondary">{jobs.length} jobs</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {jobs.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Briefcase className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>No jobs posted yet</p>
-                    <p className="text-sm">Post your first job to get started</p>
-                  </div>
-                ) : (
-                  <div className="space-y-6 max-h-96 overflow-y-auto">
-                    {jobs.map((job) => (
-                      <div
-                        key={job.id}
-                        className="border border-border rounded-lg p-4 hover:shadow-md transition-all duration-300"
-                      >
-                        <div className="flex justify-between items-start mb-3">
-                          <div>
-                            <h4 className="font-medium text-foreground">{job.title}</h4>
-                            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                              <Badge variant="outline" className="text-xs">
-                                {job.job_type}
-                              </Badge>
-                              {job.location && <span>• {job.location}</span>}
-                              {job.salary && <span>• {job.salary}</span>}
-                            </div>
-                          </div>
-                          <Badge
-                            variant={job.active ? "default" : "secondary"}
-                            className={
-                              job.active ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100" : ""
-                            }
-                          >
-                            {job.active ? "Active" : "Inactive"}
-                          </Badge>
-                        </div>
-
-                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{job.description}</p>
-
-                        {job.key_skills && (
-                          <div className="mb-4">
-                            <p className="text-xs font-medium text-muted-foreground mb-2">Required Skills:</p>
-                            <div className="flex flex-wrap gap-1">
-                              {job.key_skills
-                                .split(",")
-                                .slice(0, 4)
-                                .map((skill, index) => (
-                                  <Badge key={index} variant="outline" className="text-xs">
-                                    {skill.trim()}
-                                  </Badge>
-                                ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* QR Code Display */}
-                        <div className="mb-4 p-4 bg-white dark:bg-gray-50 rounded-lg border">
-                          <div className="flex items-center justify-between mb-2">
-                            <h5 className="font-medium text-sm text-gray-900">QR Code</h5>
-                            <div className="flex space-x-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => testQRCode(job.id, job.title)}
-                                className="text-xs"
-                              >
-                                <Eye className="w-3 h-3 mr-1" />
-                                Test
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => downloadQR(job.qr_code_url, job.title, job.id)}
-                                disabled={qrLoading === job.id}
-                                className="text-xs"
-                              >
-                                {qrLoading === job.id ? (
-                                  <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                                ) : (
-                                  <Download className="w-3 h-3 mr-1" />
-                                )}
-                                Download
-                              </Button>
-                            </div>
-                          </div>
-                          <div className="flex justify-center">
-                            <Image
-                              src={job.qr_code_url || "/placeholder.svg"}
-                              alt={`QR Code for ${job.title}`}
-                              width={150}
-                              height={150}
-                              className="border rounded"
-                              onError={(e) => {
-                                console.error("QR Code failed to load:", e)
-                              }}
-                            />
-                          </div>
-                        </div>
-
-                        {/* Job URL */}
-                        <div className="p-3 bg-muted/50 rounded-lg">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center space-x-2">
-                              <Globe className="w-4 h-4 text-muted-foreground" />
-                              <span className="text-sm font-medium text-muted-foreground">Job URL:</span>
-                            </div>
-                            <div className="flex space-x-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => copyToClipboard(job.student_url, "Job URL")}
-                                className="text-xs"
-                              >
-                                <Copy className="w-3 h-3 mr-1" />
-                                Copy
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => window.open(job.student_url, "_blank")}
-                                className="text-xs"
-                              >
-                                <ExternalLink className="w-3 h-3 mr-1" />
-                                Open
-                              </Button>
-                            </div>
-                          </div>
-                          <div className="text-xs text-muted-foreground break-all bg-background p-2 rounded border">
-                            {job.student_url}
-                          </div>
-                        </div>
-
-                        <div className="mt-3 text-xs text-muted-foreground">
-                          Posted: {new Date(job.created_at).toLocaleDateString()}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -849,181 +594,181 @@ export default function CompanyPage() {
               {/* Form Fields - Shown in both tabs */}
               <form onSubmit={handleCompanyRegistration} className="space-y-6 mt-6">
                 {/* Company Information Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-foreground flex items-center">
-                    <Building2 className="w-5 h-5 mr-2" />
-                    Company Information
-                  </h3>
+<div className="space-y-4">
+  <h3 className="text-lg font-semibold text-foreground flex items-center">
+    <Building2 className="w-5 h-5 mr-2" />
+    Company Information
+  </h3>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="companyName">Company Name *</Label>
-                      <Input
-                        id="companyName"
-                        value={companyData.companyName}
-                        onChange={(e) => setCompanyData((prev) => ({ ...prev, companyName: e.target.value }))}
-                        placeholder="Enter company name"
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="contactPersonName">Contact Person Name *</Label>
-                      <Input
-                        id="contactPersonName"
-                        value={companyData.contactPersonName}
-                        onChange={(e) => setCompanyData((prev) => ({ ...prev, contactPersonName: e.target.value }))}
-                        placeholder="Enter contact person name"
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Company Email *</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={companyData.email}
-                        onChange={(e) => setCompanyData((prev) => ({ ...prev, email: e.target.value }))}
-                        placeholder="company@example.com"
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="contactPersonNumber">Contact Person Number</Label>
-                      <Input
-                        id="contactPersonNumber"
-                        value={companyData.contactPersonNumber}
-                        onChange={(e) => setCompanyData((prev) => ({ ...prev, contactPersonNumber: e.target.value }))}
-                        placeholder="Enter phone number"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Job Information Section */}
-                <div className="space-y-4 border-t border-border pt-6">
-                  <h3 className="text-lg font-semibold text-foreground flex items-center">
-                    <Briefcase className="w-5 h-5 mr-2" />
-                    Job Information
-                  </h3>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="title">Job Title *</Label>
-                      <Select
-                        value={jobData.title}
-                        onValueChange={(value) => setJobData((prev) => ({ ...prev, title: value }))}
-                        required
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select job title" />
-                        </SelectTrigger>
-                        <SelectContent className="max-h-60 overflow-y-auto">
-                          {ROLES.map((role) => (
-                            <SelectItem key={role} value={role}>
-                              {role}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="jobType">Job Type *</Label>
-                      <Select
-                        value={jobData.jobType}
-                        onValueChange={(value) => setJobData((prev) => ({ ...prev, jobType: value }))}
-                        required
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="internship">Internship</SelectItem>
-                          <SelectItem value="full-time">Full-time</SelectItem>
-                          <SelectItem value="part-time">Part-time</SelectItem>
-                          <SelectItem value="contract">Contract</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="location">Location *</Label>
-                      <Input
-                        id="location"
-                        value={jobData.location}
-                        onChange={(e) => setJobData((prev) => ({ ...prev, location: e.target.value }))}
-                        placeholder="e.g. Remote, Mumbai, Bangalore"
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="salary">Salary Range *</Label>
-                      <Input
-                        id="salary"
-                        value={jobData.salary}
-                        onChange={(e) => setJobData((prev) => ({ ...prev, salary: e.target.value }))}
-                        placeholder="e.g. ₹50,000 - ₹70,000"
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="keySkills">Key Skills *</Label>
-                      <Input
-                        id="keySkills"
-                        value={jobData.keySkills}
-                        onChange={(e) => setJobData((prev) => ({ ...prev, keySkills: e.target.value }))}
-                        placeholder="e.g. React, Node.js, Python, JavaScript"
-                        required
-                      />
-                    </div>
-
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="description">Job Description *</Label>
-                      <Textarea
-                        id="description"
-                        value={jobData.description}
-                        onChange={(e) => setJobData((prev) => ({ ...prev, description: e.target.value }))}
-                        placeholder="Describe the role, responsibilities, and requirements..."
-                        rows={4}
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Submit Button */}
-                <div className="flex justify-end space-x-4 pt-6 border-t border-border">
-                  <Button type="button" variant="outline" onClick={clearForm} disabled={isSubmitting}>
-                    Clear Form
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="bg-primary hover:bg-primary/90 min-w-[200px]"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle className="w-4 h-4 mr-2" />
-                        {companyData.companyName ? "Post Job" : "Register & Post Job"}
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </form>
-            </Tabs>
-          </CardContent>
-        </Card>
-      </div>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="space-y-2">
+      <Label htmlFor="companyName">Company Name *</Label>
+      <Input
+        id="companyName"
+        value={companyData.companyName}
+        onChange={(e) => setCompanyData((prev) => ({ ...prev, companyName: e.target.value }))}
+        placeholder="Enter company name"
+        required
+      />
     </div>
-  )
+
+    <div className="space-y-2">
+      <Label htmlFor="contactPersonName">Contact Person Name *</Label>
+      <Input
+        id="contactPersonName"
+        value={companyData.contactPersonName}
+        onChange={(e) => setCompanyData((prev) => ({ ...prev, contactPersonName: e.target.value }))}
+        placeholder="Enter contact person name"
+        required
+      />
+    </div>
+
+    <div className="space-y-2">
+      <Label htmlFor="email">Company Email *</Label>
+      <Input
+        id="email"
+        type="email"
+        value={companyData.email}
+        onChange={(e) => setCompanyData((prev) => ({ ...prev, email: e.target.value }))}
+        placeholder="company@example.com"
+        required
+      />
+    </div>
+
+    <div className="space-y-2">
+      <Label htmlFor="contactPersonNumber">Contact Person Number</Label>
+      <Input
+        id="contactPersonNumber"
+        value={companyData.contactPersonNumber}
+        onChange={(e) => setCompanyData((prev) => ({ ...prev, contactPersonNumber: e.target.value }))}
+        placeholder="Enter phone number"
+      />
+    </div>
+  </div>
+</div>
+
+{/* Job Information Section */}
+<div className="space-y-4 border-t border-border pt-6">
+  <h3 className="text-lg font-semibold text-foreground flex items-center">
+    <Briefcase className="w-5 h-5 mr-2" />
+    Job Information
+  </h3>
+
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="space-y-2">
+      <Label htmlFor="title">Job Title *</Label>
+      <Select
+        value={jobData.title}
+        onValueChange={(value) => setJobData((prev) => ({ ...prev, title: value }))}
+        required
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Select job title" />
+        </SelectTrigger>
+        <SelectContent className="max-h-60 overflow-y-auto">
+          {ROLES.map((role) => (
+            <SelectItem key={role} value={role}>
+              {role}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+
+    <div className="space-y-2">
+      <Label htmlFor="jobType">Job Type *</Label>
+      <Select
+        value={jobData.jobType}
+        onValueChange={(value) => setJobData((prev) => ({ ...prev, jobType: value }))}
+        required
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Select type" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="internship">Internship</SelectItem>
+          <SelectItem value="full-time">Full-time</SelectItem>
+          <SelectItem value="part-time">Part-time</SelectItem>
+          <SelectItem value="contract">Contract</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+
+    <div className="space-y-2">
+      <Label htmlFor="location">Location *</Label>
+      <Input
+        id="location"
+        value={jobData.location}
+        onChange={(e) => setJobData((prev) => ({ ...prev, location: e.target.value }))}
+        placeholder="e.g. Remote, Mumbai, Bangalore"
+        required
+      />
+    </div>
+
+    <div className="space-y-2">
+      <Label htmlFor="salary">Salary Range *</Label>
+      <Input
+        id="salary"
+        value={jobData.salary}
+        onChange={(e) => setJobData((prev) => ({ ...prev, salary: e.target.value }))}
+        placeholder="e.g. ₹50,000 - ₹70,000"
+        required
+      />
+    </div>
+
+    <div className="space-y-2 md:col-span-2">
+      <Label htmlFor="keySkills">Key Skills *</Label>
+      <Input
+        id="keySkills"
+        value={jobData.keySkills}
+        onChange={(e) => setJobData((prev) => ({ ...prev, keySkills: e.target.value }))}
+        placeholder="e.g. React, Node.js, Python, JavaScript"
+        required
+      />
+    </div>
+
+    <div className="space-y-2 md:col-span-2">
+      <Label htmlFor="description">Job Description *</Label>
+      <Textarea
+        id="description"
+        value={jobData.description}
+        onChange={(e) => setJobData((prev) => ({ ...prev, description: e.target.value }))}
+        placeholder="Describe the role, responsibilities, and requirements..."
+        rows={4}
+        required
+      />
+    </div>
+  </div>
+</div>
+
+{/* Submit Button */}
+<div className="flex justify-end space-x-4 pt-6 border-t border-border">
+  <Button type="button" variant="outline" onClick={clearForm} disabled={isSubmitting}>
+    Clear Form
+  </Button>
+  <Button
+    type="submit"
+    disabled={isSubmitting}
+    className="bg-primary hover:bg-primary/90 min-w-[200px]"
+  >
+    {isSubmitting ? (
+      <>
+        <Loader2 className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+        Processing...
+      </>
+    ) : (
+      <>
+        <CheckCircle className="w-4 h-4 mr-2" />
+        {companyData.companyName ? "Post Job" : "Register & Post Job"}
+      </>
+    )}
+  </Button>
+</div>
+</form>
+</Tabs>
+</CardContent>
+</Card>
+</div>
+</div>
+)
 }
