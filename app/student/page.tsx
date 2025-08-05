@@ -28,7 +28,6 @@ import {
   Shield,
   BarChart3,
   Cpu,
-  Globe,
   Zap,
   Briefcase,
 } from "lucide-react"
@@ -58,36 +57,72 @@ interface CareerMatch {
   color: string
 }
 
-const engineeringCareers = [
-  { id: "frontend", label: "Frontend Development", skills: ["React", "JavaScript", "CSS", "HTML"] },
-  { id: "backend", label: "Backend Development", skills: ["Node.js", "Python", "Java", "Databases"] },
-  { id: "fullstack", label: "Full Stack Development", skills: ["React", "Node.js", "MongoDB", "APIs"] },
-  { id: "mobile", label: "Mobile App Development", skills: ["React Native", "Flutter", "iOS", "Android"] },
-  { id: "devops", label: "DevOps Engineering", skills: ["Docker", "Kubernetes", "AWS", "CI/CD"] },
-  { id: "data", label: "Data Engineering", skills: ["Python", "SQL", "Apache Spark", "ETL"] },
-  { id: "ml", label: "Machine Learning Engineering", skills: ["Python", "TensorFlow", "PyTorch", "MLOps"] },
+const careerOptions = [
   {
-    id: "cybersecurity",
-    label: "Cybersecurity Engineering",
-    skills: ["Network Security", "Penetration Testing", "SIEM"],
+    id: "frontend",
+    label: "Frontend Development",
+    skills: ["React", "JavaScript", "CSS", "HTML", "TypeScript"],
+    values: ["Creativity", "Excellence", "Craftsmanship"],
+    personality: [0, 2, 5], // creativity, social, curiosity
+    workPrefs: { independence: [0, 50], pace: [50, 100], focus: [0, 50] },
+    openings: 2847,
+    icon: Code,
+    color: "bg-blue-500",
   },
-  { id: "cloud", label: "Cloud Engineering", skills: ["AWS", "Azure", "GCP", "Terraform"] },
-  { id: "embedded", label: "Embedded Systems", skills: ["C/C++", "Microcontrollers", "IoT", "RTOS"] },
-  { id: "game", label: "Game Development", skills: ["Unity", "C#", "3D Graphics", "Game Design"] },
-  { id: "blockchain", label: "Blockchain Development", skills: ["Solidity", "Web3", "Smart Contracts", "DeFi"] },
+  {
+    id: "data_analyst",
+    label: "Data Analyst",
+    skills: ["Excel", "SQL", "Tableau", "Statistics", "Data Visualization"],
+    values: ["Learning", "Curiosity", "Purpose"],
+    personality: [1, 5, 9], // organization, curiosity, calm
+    workPrefs: { independence: [50, 100], pace: [0, 50], focus: [50, 100] },
+    openings: 2100,
+    icon: BarChart3,
+    color: "bg-indigo-500",
+  },
+  {
+    id: "project_manager",
+    label: "Project Manager",
+    skills: ["Project Planning", "Communication", "Leadership", "Agile", "Risk Management"],
+    values: ["Leadership", "Collaboration", "Impact"],
+    personality: [2, 6, 9], // social, responsibility, calm
+    workPrefs: { independence: [0, 50], pace: [50, 100], focus: [0, 50] },
+    openings: 1800,
+    icon: Briefcase,
+    color: "bg-green-500",
+  },
+  {
+    id: "ux_designer",
+    label: "UX Designer",
+    skills: ["Wireframing", "Prototyping", "Figma", "User Research", "UI Design"],
+    values: ["Creativity", "Empathy", "Innovation"],
+    personality: [0, 3, 5], // creativity, helpfulness, curiosity
+    workPrefs: { independence: [0, 50], pace: [50, 100], focus: [0, 50] },
+    openings: 1650,
+    icon: Heart,
+    color: "bg-pink-500",
+  },
+  {
+    id: "healthcare_admin",
+    label: "Healthcare Administrator",
+    skills: ["Operations Management", "Compliance", "Patient Coordination", "Budgeting"],
+    values: ["Service", "Community", "Responsibility"],
+    personality: [3, 6, 9], // helpfulness, responsibility, calm
+    workPrefs: { independence: [0, 50], pace: [0, 50], focus: [50, 100] },
+    openings: 1450,
+    icon: Settings,
+    color: "bg-yellow-500",
+  },
 ]
 
 const personalityQuestions = [
   "I enjoy exploring new ideas and creative solutions",
   "I am organized and like to plan ahead",
   "I feel energized when interacting with groups of people",
-  "I try to be helpful and considerate of others' feelings",
+  "I try to be helpful and consider others' feelings",
   "I often worry about things that might go wrong",
-  "I am curious about many different topics and subjects",
-  "I follow through on my commitments and responsibilities",
-  "I prefer being the center of attention in social situations",
-  "I trust others and believe people have good intentions",
-  "I remain calm and composed under pressure",
+  "I am curious about many different topics",
+  "I follow through on my commitments",
 ]
 
 const coreValues = [
@@ -115,25 +150,15 @@ const coreValues = [
 
 export default function StudentPage() {
   const [currentStep, setCurrentStep] = useState<
-    | "phone-check"
-    | "basic-info"
-    | "core-values"
-    | "career-interests"
-    | "personality"
-    | "work-preferences"
-    | "results"
-    | "opportunities"
-  >("phone-check")
+    "basic-info" | "core-values" | "personality" | "work-preferences" | "results" | "opportunities"
+  >("basic-info")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [job, setJob] = useState<Job | null>(null)
-  const [phoneExists, setPhoneExists] = useState(false)
-  const [existingAssessment, setExistingAssessment] = useState<any>(null)
   const { toast } = useToast()
   const searchParams = useSearchParams()
   const router = useRouter()
   const jobId = searchParams.get("jobId")
 
-  const [phoneNumber, setPhoneNumber] = useState("")
   const [studentData, setStudentData] = useState({
     fullName: "",
     email: "",
@@ -143,7 +168,6 @@ export default function StudentPage() {
   })
 
   const [selectedValues, setSelectedValues] = useState<string[]>([])
-  const [selectedCareers, setSelectedCareers] = useState<string[]>([])
   const [personalityAnswers, setPersonalityAnswers] = useState<Record<number, number>>({})
   const [workPreferences, setWorkPreferences] = useState({
     independence: [50],
@@ -174,154 +198,72 @@ export default function StudentPage() {
     }
   }
 
-  const checkPhoneNumber = async () => {
-    if (!phoneNumber.trim()) {
-      toast({
-        title: "Phone Number Required",
-        description: "Please enter your phone number to continue.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    // Check if phone number exists in localStorage (mock check)
-    const existingData = localStorage.getItem(`student_${phoneNumber}`)
-    if (existingData) {
-      const data = JSON.parse(existingData)
-      setPhoneExists(true)
-      setExistingAssessment(data)
-      setStudentData(data.studentData || {})
-      calculateFitmentScores(data.selectedCareers || [], data.personalityAnswers || {}, data.workPreferences || {})
-      setCurrentStep("results")
-    } else {
-      setPhoneExists(false)
-      setStudentData((prev) => ({ ...prev, phone: phoneNumber }))
-      setCurrentStep("basic-info")
-    }
-  }
-
-  const calculateFitmentScores = (careers: string[], personality: Record<number, number>, workPrefs: any) => {
+  const calculateFitmentScores = (values: string[], personality: Record<number, number>, workPrefs: any) => {
     const matches: CareerMatch[] = []
 
-    // Define career scoring logic based on selections and personality
-    const careerScoring = {
-      frontend: {
-        base: careers.includes("frontend") ? 85 : 60,
-        personality: [0, 1, 2], // creativity, organization, social
-        skills: ["React", "JavaScript", "CSS", "HTML", "TypeScript"],
-        openings: 2847,
-        icon: Code,
-        color: "bg-blue-500",
-      },
-      backend: {
-        base: careers.includes("backend") ? 88 : 65,
-        personality: [1, 6, 9], // organization, responsibility, calm
-        skills: ["Node.js", "Python", "Java", "PostgreSQL", "MongoDB"],
-        openings: 1923,
-        icon: Database,
-        color: "bg-green-500",
-      },
-      fullstack: {
-        base: careers.includes("fullstack") ? 82 : 70,
-        personality: [0, 1, 5], // creativity, organization, curiosity
-        skills: ["React", "Node.js", "MongoDB", "REST APIs", "Git"],
-        openings: 3156,
-        icon: Globe,
-        color: "bg-purple-500",
-      },
-      mobile: {
-        base: careers.includes("mobile") ? 79 : 62,
-        personality: [0, 2, 5], // creativity, social, curiosity
-        skills: ["React Native", "Flutter", "iOS", "Android", "Firebase"],
-        openings: 1456,
-        icon: Smartphone,
-        color: "bg-orange-500",
-      },
-      devops: {
-        base: careers.includes("devops") ? 86 : 58,
-        personality: [1, 6, 9], // organization, responsibility, calm
-        skills: ["Docker", "Kubernetes", "AWS", "CI/CD", "Terraform"],
-        openings: 1789,
-        icon: Settings,
-        color: "bg-red-500",
-      },
-      data: {
-        base: careers.includes("data") ? 84 : 63,
-        personality: [1, 5, 9], // organization, curiosity, calm
-        skills: ["Python", "SQL", "Apache Spark", "ETL", "Data Modeling"],
-        openings: 2234,
-        icon: BarChart3,
-        color: "bg-indigo-500",
-      },
-      ml: {
-        base: careers.includes("ml") ? 87 : 55,
-        personality: [0, 5, 9], // creativity, curiosity, calm
-        skills: ["Python", "TensorFlow", "PyTorch", "MLOps", "Statistics"],
-        openings: 1567,
-        icon: Cpu,
-        color: "bg-pink-500",
-      },
-      cybersecurity: {
-        base: careers.includes("cybersecurity") ? 81 : 59,
-        personality: [1, 4, 6], // organization, worry, responsibility
-        skills: ["Network Security", "Penetration Testing", "SIEM", "Compliance"],
-        openings: 1345,
-        icon: Shield,
-        color: "bg-gray-500",
-      },
-      cloud: {
-        base: careers.includes("cloud") ? 83 : 61,
-        personality: [1, 5, 6], // organization, curiosity, responsibility
-        skills: ["AWS", "Azure", "GCP", "Terraform", "Serverless"],
-        openings: 1998,
-        icon: Zap,
-        color: "bg-yellow-500",
-      },
-    }
+    careerOptions.forEach((career) => {
+      let score = 50 // Base score
 
-    // Calculate scores for each career
-    Object.entries(careerScoring).forEach(([careerKey, config]) => {
-      let score = config.base
+      // Value alignment (30% weight)
+      const valueMatches = values.filter((v) => career.values.includes(v)).length
+      score += (valueMatches / 5) * 30 // Max 30 points for matching all 5 values
 
-      // Adjust based on personality answers
-      config.personality.forEach((questionIndex) => {
+      // Personality alignment (40% weight)
+      let personalityScore = 0
+      career.personality.forEach((questionIndex) => {
         const answer = personality[questionIndex] || 3
-        score += (answer - 3) * 2 // -4 to +4 adjustment
+        personalityScore += (answer - 3) * 4 // -8 to +8 per question
       })
+      score += (personalityScore / 24) * 40 // Normalize to 40 points max
 
-      // Adjust based on work preferences
-      if (workPrefs.independence) {
-        if (careerKey === "backend" || careerKey === "data") {
-          score += (workPrefs.independence[0] - 50) * 0.1
-        }
+      // Work preferences alignment (30% weight)
+      let workPrefScore = 0
+      if (workPrefs.independence[0] >= career.workPrefs.independence[0] && workPrefs.independence[0] <= career.workPrefs.independence[1]) {
+        workPrefScore += 10
       }
+      if (workPrefs.pace[0] >= career.workPrefs.pace[0] && workPrefs.pace[0] <= career.workPrefs.pace[1]) {
+        workPrefScore += 10
+      }
+      if (workPrefs.focus[0] >= career.workPrefs.focus[0] && workPrefs.focus[0] <= career.workPrefs.focus[1]) {
+        workPrefScore += 10
+      }
+      score += (workPrefScore / 30) * 30 // Normalize to 30 points max
 
       // Ensure score is within bounds
       score = Math.max(45, Math.min(95, score))
 
-      const career = engineeringCareers.find((c) => c.id === careerKey)
-      if (career) {
-        matches.push({
-          id: careerKey,
-          title: career.label,
-          fitmentScore: Math.round(score),
-          description: `Perfect match for your technical interests and personality profile`,
-          skills: config.skills,
-          openings: config.openings,
-          icon: config.icon,
-          color: config.color,
-        })
+      // Generate reasoning
+      const reasoning = []
+      if (valueMatches > 0) {
+        reasoning.push(`Your values (${values.filter((v) => career.values.includes(v)).join(", ")}) align with this role's focus on ${career.values.join(", ")}.`)
       }
+      if (personalityScore > 0) {
+        reasoning.push("Your personality traits match the role's requirements for creativity and responsibility.")
+      }
+      if (workPrefScore > 0) {
+        reasoning.push("Your work preferences for independence, pace, and focus suit this role's work style.")
+      }
+
+      matches.push({
+        id: career.id,
+        title: career.label,
+        fitmentScore: Math.round(score),
+        description: reasoning.length > 0 ? reasoning.join(" ") : "This role aligns with your profile.",
+        skills: career.skills,
+        openings: career.openings,
+        icon: career.icon,
+        color: career.color,
+      })
     })
 
-    // Sort by fitment score and take top 3
-    const topMatches = matches.sort((a, b) => b.fitmentScore - a.fitmentScore).slice(0, 3)
+    // Sort by fitment score and take top 5
+    const topMatches = matches.sort((a, b) => b.fitmentScore - a.fitmentScore).slice(0, 5)
     setCareerMatches(topMatches)
   }
 
   const handleBasicInfoSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!studentData.fullName || !studentData.email || !studentData.degree) {
+    if (!studentData.fullName || !studentData.email || !studentData.degree || !studentData.phone) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields.",
@@ -341,23 +283,11 @@ export default function StudentPage() {
       })
       return
     }
-    setCurrentStep("career-interests")
-  }
-
-  const handleCareerInterestsNext = () => {
-    if (selectedCareers.length === 0) {
-      toast({
-        title: "Select Career Interests",
-        description: "Please select at least one career area that interests you.",
-        variant: "destructive",
-      })
-      return
-    }
     setCurrentStep("personality")
   }
 
   const handlePersonalityNext = () => {
-    if (Object.keys(personalityAnswers).length !== 10) {
+    if (Object.keys(personalityAnswers).length !== 7) {
       toast({
         title: "Complete Assessment",
         description: "Please answer all personality questions.",
@@ -373,13 +303,12 @@ export default function StudentPage() {
 
     try {
       // Calculate fitment scores
-      calculateFitmentScores(selectedCareers, personalityAnswers, workPreferences)
+      calculateFitmentScores(selectedValues, personalityAnswers, workPreferences)
 
       // Save assessment data
       const assessmentData = {
         studentData,
         selectedValues,
-        selectedCareers,
         personalityAnswers,
         workPreferences,
         timestamp: new Date().toISOString(),
@@ -443,61 +372,9 @@ export default function StudentPage() {
   }
 
   const getStepProgress = () => {
-    const steps = [
-      "phone-check",
-      "basic-info",
-      "core-values",
-      "career-interests",
-      "personality",
-      "work-preferences",
-      "results",
-    ]
+    const steps = ["basic-info", "core-values", "personality", "work-preferences", "results"]
     const currentIndex = steps.indexOf(currentStep)
     return ((currentIndex + 1) / steps.length) * 100
-  }
-
-  // Phone Check Step
-  if (currentStep === "phone-check") {
-    return (
-      <div className="min-h-screen bg-background p-4">
-        <div className="absolute top-4 right-4">
-          <ThemeToggle />
-        </div>
-        <div className="container mx-auto max-w-md py-16">
-          <Link href="/" className="inline-flex items-center text-primary hover:text-primary/80 mb-8 group">
-            <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
-            Back to Home
-          </Link>
-
-          <Card className="shadow-xl border-0 bg-card/50 backdrop-blur-sm">
-            <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <GraduationCap className="w-8 h-8 text-primary" />
-              </div>
-              <CardTitle className="text-2xl">Student Assessment</CardTitle>
-              <CardDescription>Enter your phone number to start or continue your assessment</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number *</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="Enter your phone number"
-                  className="text-center text-lg"
-                />
-              </div>
-
-              <Button onClick={checkPhoneNumber} className="w-full bg-primary hover:bg-primary/90" size="lg">
-                Continue
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    )
   }
 
   // Basic Info Step
@@ -554,6 +431,18 @@ export default function StudentPage() {
                       value={studentData.email}
                       onChange={(e) => setStudentData((prev) => ({ ...prev, email: e.target.value }))}
                       placeholder="your.email@example.com"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number *</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={studentData.phone}
+                      onChange={(e) => setStudentData((prev) => ({ ...prev, phone: e.target.value }))}
+                      placeholder="Enter your phone number"
                       required
                     />
                   </div>
@@ -685,8 +574,8 @@ export default function StudentPage() {
     )
   }
 
-  // Career Interests Step
-  if (currentStep === "career-interests") {
+  // Personality Assessment Step
+  if (currentStep === "personality") {
     return (
       <div className="min-h-screen bg-background p-4">
         <div className="absolute top-4 right-4">
@@ -703,90 +592,6 @@ export default function StudentPage() {
               Previous
             </Button>
             <div className="text-sm text-muted-foreground">Step 3 of 4</div>
-          </div>
-
-          <div className="mb-6">
-            <Progress value={getStepProgress()} className="h-2" />
-          </div>
-
-          <Card className="shadow-xl border-0 bg-card/50 backdrop-blur-sm">
-            <CardHeader>
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                  <Code className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <CardTitle className="text-2xl">Engineering Career Interests</CardTitle>
-                  <CardDescription>Select the engineering fields that interest you most</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {engineeringCareers.map((career) => (
-                  <div key={career.id} className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-muted/50">
-                    <Checkbox
-                      id={career.id}
-                      checked={selectedCareers.includes(career.id)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setSelectedCareers((prev) => [...prev, career.id])
-                        } else {
-                          setSelectedCareers((prev) => prev.filter((c) => c !== career.id))
-                        }
-                      }}
-                    />
-                    <div className="flex-1">
-                      <Label htmlFor={career.id} className="text-sm font-medium cursor-pointer">
-                        {career.label}
-                      </Label>
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {career.skills.slice(0, 3).map((skill) => (
-                          <Badge key={skill} variant="secondary" className="text-xs">
-                            {skill}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex justify-end pt-6 border-t border-border">
-                <Button
-                  onClick={handleCareerInterestsNext}
-                  className="bg-primary hover:bg-primary/90"
-                  disabled={selectedCareers.length === 0}
-                >
-                  Next
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    )
-  }
-
-  // Personality Assessment Step
-  if (currentStep === "personality") {
-    return (
-      <div className="min-h-screen bg-background p-4">
-        <div className="absolute top-4 right-4">
-          <ThemeToggle />
-        </div>
-        <div className="container mx-auto max-w-4xl py-8">
-          <div className="flex items-center justify-between mb-6">
-            <Button
-              onClick={() => setCurrentStep("career-interests")}
-              variant="outline"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Previous
-            </Button>
-            <div className="text-sm text-muted-foreground">Step 4 of 4</div>
           </div>
 
           <div className="mb-6">
@@ -839,7 +644,7 @@ export default function StudentPage() {
                 <Button
                   onClick={handlePersonalityNext}
                   className="bg-primary hover:bg-primary/90"
-                  disabled={Object.keys(personalityAnswers).length !== 10}
+                  disabled={Object.keys(personalityAnswers).length !== 7}
                 >
                   Next
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -869,7 +674,7 @@ export default function StudentPage() {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Previous
             </Button>
-            <div className="text-sm text-muted-foreground">Step 3 of 4</div>
+            <div className="text-sm text-muted-foreground">Step 4 of 4</div>
           </div>
 
           <div className="mb-6">
