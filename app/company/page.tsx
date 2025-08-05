@@ -1014,7 +1014,7 @@ export default function CompanyPage() {
                     ) : (
                       <>
                         <CheckCircle className="w-4 h-4 mr-2" />
-                        {companyData.companyName ? "Update Company & Post Job" : "Register & Post Job"}
+                        {companyData.companyName ? "Post Job" : "Register & Post Job"}
                       </>
                     )}
                   </Button>
