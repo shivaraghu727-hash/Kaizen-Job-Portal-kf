@@ -30,7 +30,41 @@ import {
   Briefcase,
 } from "lucide-react"
 import Link from "next/link"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/components/hooks/use-toast"
+
+// Define roles from Roles.xlsx
+const ROLES = [
+  "Agile Coach", "AI Engineer", "AI Research Scientist", "AI Solutions Architect", "Application Developer",
+  "Assembly Line Worker", "Automation Tester", "Back-End Developer", "Bank Teller", "Big Data Engineer",
+  "Business Analyst", "Change Management Specialist", "Clinical Research Associate", "Cloud Administrator",
+  "Cloud Developer", "Cloud Security Engineer", "Cloud Solutions Architect", "CNC Machinist",
+  "Compliance Analyst", "Compliance Engineer", "Computer Vision Engineer", "Conversational AI Designer",
+  "Corporate Loan Analyst", "Credit Officer", "Cybersecurity Analyst", "Cybersecurity Consultant",
+  "Data Analyst", "Data Engineer", "Data Scientist", "Data Warehouse Developer", "Database Administrator",
+  "Database Engineer", "Deep Learning Engineer", "Desktop Application Developer", "DevOps Engineer",
+  "Digital Marketing Specialist", "Digital Transformation Lead", "Documentation Specialist",
+  "Electronics Design Engineer", "Electronics QA Inspector", "Embedded Software Engineer",
+  "Enterprise Architect", "Ethical Hacker", "Front-End Developer", "Front-End Web Engineer",
+  "Full-Stack Developer", "Game Developer", "Health & Safety Officer", "Healthcare Administrator",
+  "Incident Responder", "Interaction Designer", "Inventory Control Manager", "IT Account Manager",
+  "IT Auditor", "IT Consultant", "IT Manager", "IT Operations Engineer", "IT Risk Analyst",
+  "IT Strategy Consultant", "IT Support Specialist", "Logistics Coordinator", "Machine Learning Engineer",
+  "Maintenance Technician", "Market Access Specialist", "Medical Records Technician",
+  "Medical Sales Representative", "Medical Technologist", "Mobile App Developer", "Network Administrator",
+  "Network Engineer", "NLP Engineer", "Patient Care Coordinator", "Penetration Tester",
+  "Performance Tester", "Pharmacovigilance Specialist", "Physician Assistant", "Physiotherapist",
+  "Pre-Sales Consultant", "Process Consultant", "Process Engineer", "Procurement Specialist",
+  "Product Manager", "Production Operator", "Production Planner", "Production Supervisor",
+  "Project Manager", "Prototyping Specialist", "QA Analyst", "QA Engineer", "Quality Control Analyst",
+  "Quality Inspector", "Quantitative Analyst", "Radiology Technician", "Regulatory Affairs Specialist",
+  "Relationship Manager", "Reliability Engineer", "Research Scientist", "Scrum Master",
+  "Security Architect", "Security Engineer", "Site Reliability Engineer", "Software Architect",
+  "Software Tester", "Solutions Consultant", "Speech-Language Pathologist", "SQL Developer",
+  "Staff Nurse", "Supply Chain Specialist", "System Administrator", "Systems Analyst",
+  "Technical Product Manager", "Technical Sales Engineer", "Technical Writer", "Technology Analyst",
+  "Test Automation Engineer", "UI Developer", "UI/UX Researcher", "UX Designer", "UX Engineer",
+  "Vulnerability Analyst", "Web Developer"
+]
 
 interface Job {
   id: string
@@ -49,6 +83,8 @@ interface ValidationErrors {
   email?: string
   phone?: string
   general?: string
+  jobTitle?: string
+  jobDescription?: string
 }
 
 export default function CompanyPage() {
@@ -189,7 +225,10 @@ export default function CompanyPage() {
     for (const pattern of jobTitlePatterns) {
       const match = text.match(pattern)
       if (match) {
-        setJobData((prev) => ({ ...prev, title: match[1].trim() }))
+        const spokenTitle = match[1].trim()
+        // Find closest matching role from ROLES
+        const matchedRole = ROLES.find((role) => role.toLowerCase().includes(spokenTitle.toLowerCase()))
+        setJobData((prev) => ({ ...prev, title: matchedRole || spokenTitle }))
         break
       }
     }
@@ -334,6 +373,14 @@ export default function CompanyPage() {
       }
     }
 
+    // Validate required job fields
+    if (!jobData.title) {
+      errors.jobTitle = "Job Title is required."
+    }
+    if (!jobData.description) {
+      errors.jobDescription = "Job Description is required."
+    }
+
     setValidationErrors(errors)
     return Object.keys(errors).length === 0
   }
@@ -343,9 +390,14 @@ export default function CompanyPage() {
     setIsSubmitting(true)
 
     try {
-      // Validate for duplicates
+      // Validate for duplicates and required fields
       const isValid = await validateData()
       if (!isValid) {
+        toast({
+          title: "Validation Error",
+          description: "Please fill in all required fields correctly.",
+          variant: "destructive",
+        })
         setIsSubmitting(false)
         return
       }
@@ -380,41 +432,34 @@ export default function CompanyPage() {
 
       setIsRegistered(true)
 
-      // If job data is provided, post the job
-      if (jobData.title && jobData.description) {
-        console.log("=== Job Posting ===")
-        console.log("Job data:", jobData)
+      // Post the job (now required)
+      console.log("=== Job Posting ===")
+      console.log("Job data:", jobData)
 
-        const jobResponse = await fetch("/api/jobs", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...jobData,
-            companyEmail: companyData.email,
-          }),
+      const jobResponse = await fetch("/api/jobs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...jobData,
+          companyEmail: companyData.email,
+        }),
+      })
+
+      const jobResult = await jobResponse.json()
+      console.log("Job posting result:", jobResult)
+
+      if (jobResult.success) {
+        toast({
+          title: "Success!",
+          description: "Company registered and job posted successfully! QR code generated.",
         })
-
-        const jobResult = await jobResponse.json()
-        console.log("Job posting result:", jobResult)
-
-        if (jobResult.success) {
-          toast({
-            title: "Success!",
-            description: "Company registered and job posted successfully! QR code generated.",
-          })
-        } else {
-          toast({
-            title: "Partial Success",
-            description: "Company registered but job posting failed. You can post jobs from the dashboard.",
-            variant: "destructive",
-          })
-        }
       } else {
         toast({
-          title: "Company Registered!",
-          description: "You can now post jobs from your dashboard.",
+          title: "Partial Success",
+          description: "Company registered but job posting failed. You can try posting from the dashboard.",
+          variant: "destructive",
         })
       }
 
@@ -467,10 +512,10 @@ export default function CompanyPage() {
         }),
       })
 
-      const result = await response.json()
-      console.log("Job posting result:", result)
+      const jobResult = await response.json()
+      console.log("Job posting result:", jobResult)
 
-      if (result.success) {
+      if (jobResult.success) {
         toast({
           title: "Job Posted!",
           description: "Job posted successfully! QR code generated.",
@@ -533,7 +578,7 @@ export default function CompanyPage() {
                 <div>
                   <CardTitle className="text-2xl gradient-text">Company Registration & Job Posting</CardTitle>
                   <CardDescription className="text-lg">
-                    Register your company and post your first job in one go
+                    Register your company and post your first job
                   </CardDescription>
                 </div>
               </div>
@@ -722,22 +767,36 @@ export default function CompanyPage() {
                 <div className="space-y-6 border-t pt-8">
                   <div className="flex items-center space-x-2 mb-4">
                     <Briefcase className="w-5 h-5 text-purple-600" />
-                    <h3 className="text-xl font-semibold">Job Information (Optional)</h3>
-                    <Badge variant="secondary" className="text-xs">
-                      You can add this later
-                    </Badge>
+                    <h3 className="text-xl font-semibold">Job Information</h3>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="title">Job Title</Label>
-                      <Input
-                        id="title"
+                      <Label htmlFor="title">Job Title *</Label>
+                      <Select
                         value={jobData.title}
-                        onChange={(e) => setJobData((prev) => ({ ...prev, title: e.target.value }))}
-                        placeholder="e.g. Software Developer"
-                        className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
-                      />
+                        onValueChange={(value) => setJobData((prev) => ({ ...prev, title: value }))}
+                        required
+                      >
+                        <SelectTrigger className={`border-gray-300 focus:border-purple-500 focus:ring-purple-500 ${
+                          validationErrors.jobTitle ? "border-red-500" : ""
+                        }`}>
+                          <SelectValue placeholder="Select job title" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-60 overflow-y-auto">
+                          {ROLES.map((role) => (
+                            <SelectItem key={role} value={role}>
+                              {role}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {validationErrors.jobTitle && (
+                        <Alert variant="destructive" className="mt-2">
+                          <AlertCircle className="h-4 w-4" />
+                          <AlertDescription>{validationErrors.jobTitle}</AlertDescription>
+                        </Alert>
+                      )}
                     </div>
 
                     <div className="space-y-2">
@@ -792,15 +851,24 @@ export default function CompanyPage() {
                     </div>
 
                     <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="description">Job Description</Label>
+                      <Label htmlFor="description">Job Description *</Label>
                       <Textarea
                         id="description"
                         value={jobData.description}
                         onChange={(e) => setJobData((prev) => ({ ...prev, description: e.target.value }))}
                         placeholder="Describe the role, responsibilities, and requirements..."
                         rows={4}
-                        className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
+                        required
+                        className={`border-gray-300 focus:border-purple-500 focus:ring-purple-500 ${
+                          validationErrors.jobDescription ? "border-red-500" : ""
+                        }`}
                       />
+                      {validationErrors.jobDescription && (
+                        <Alert variant="destructive" className="mt-2">
+                          <AlertCircle className="h-4 w-4" />
+                          <AlertDescription>{validationErrors.jobDescription}</AlertDescription>
+                        </Alert>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -856,14 +924,21 @@ export default function CompanyPage() {
               <form onSubmit={handleJobPost} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="newTitle">Job Title *</Label>
-                  <Input
-                    id="newTitle"
+                  <Select
                     value={jobData.title}
-                    onChange={(e) => setJobData((prev) => ({ ...prev, title: e.target.value }))}
-                    placeholder="e.g. Senior Developer"
-                    required
-                    className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
-                  />
+                    onValueChange={(value) => setJobData((prev) => ({ ...prev, title: value }))}
+                  >
+                    <SelectTrigger className="border-gray-300 focus:border-purple-500 focus:ring-purple-500">
+                      <SelectValue placeholder="Select job title" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60 overflow-y-auto">
+                      {ROLES.map((role) => (
+                        <SelectItem key={role} value={role}>
+                          {role}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
