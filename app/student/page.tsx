@@ -380,54 +380,51 @@ export default function StudentPage() {
   // Basic Info Step
   if (currentStep === "basic-info") {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-background/80 flex items-center justify-center p-4 sm:p-6">
-        <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
+      <div className="min-h-screen bg-background p-4">
+        <div className="absolute top-4 right-4">
           <ThemeToggle />
         </div>
-        <div className="container mx-auto w-full max-w-lg sm:max-w-xl md:max-w-3xl lg:max-w-4xl py-10 sm:py-12">
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
-            <Link href="/" className="inline-flex items-center text-primary hover:text-primary/80 group transition-colors duration-200">
-              <ArrowLeft className="w-5 h-5 mr-2 transition-transform group-hover:-translate-x-1" />
+        <div className="container mx-auto max-w-4xl py-8">
+          <div className="flex items-center justify-between mb-6">
+            <Link href="/" className="inline-flex items-center text-primary hover:text-primary/80 group">
+              <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
               Back to Home
             </Link>
-            <div className="text-base sm:text-lg text-muted-foreground font-medium">Step 1 of 4</div>
+            <div className="text-sm text-muted-foreground">Step 1 of 4</div>
           </div>
 
-          <div className="mb-8">
-            <Progress value={getStepProgress()} className="h-3 rounded-full bg-primary/10" />
+          <div className="mb-6">
+            <Progress value={getStepProgress()} className="h-2" />
           </div>
 
-          <Card className="shadow-2xl border-0 bg-card/90 backdrop-blur-lg rounded-2xl overflow-hidden">
-            <CardHeader className="p-6 sm:p-8">
-              <div className="flex items-center space-x-4">
-                <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center">
-                  <User className="w-8 h-8 text-primary" />
+          <Card className="shadow-xl border-0 bg-card/50 backdrop-blur-sm">
+            <CardHeader>
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <User className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl sm:text-3xl font-bold">Basic Information</CardTitle>
-                  <CardDescription className="text-base sm:text-lg text-muted-foreground mt-1">
-                    Let's start with your basic details
-                  </CardDescription>
+                  <CardTitle className="text-2xl">Basic Information</CardTitle>
+                  <CardDescription>Let's start with your basic details</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-6 sm:p-8">
+            <CardContent>
               <form onSubmit={handleBasicInfoSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="space-y-3">
-                    <Label htmlFor="fullName" className="text-base sm:text-lg font-medium">Name *</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Name *</Label>
                     <Input
                       id="fullName"
                       value={studentData.fullName}
                       onChange={(e) => setStudentData((prev) => ({ ...prev, fullName: e.target.value }))}
                       placeholder="Enter your full name"
                       required
-                      className="h-12 text-base sm:text-lg rounded-lg border border-input focus:ring-2 focus:ring-primary"
                     />
                   </div>
 
-                  <div className="space-y-3">
-                    <Label htmlFor="email" className="text-base sm:text-lg font-medium">Email *</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email *</Label>
                     <Input
                       id="email"
                       type="email"
@@ -435,12 +432,11 @@ export default function StudentPage() {
                       onChange={(e) => setStudentData((prev) => ({ ...prev, email: e.target.value }))}
                       placeholder="your.email@example.com"
                       required
-                      className="h-12 text-base sm:text-lg rounded-lg border border-input focus:ring-2 focus:ring-primary"
                     />
                   </div>
 
-                  <div className="space-y-3">
-                    <Label htmlFor="phone" className="text-base sm:text-lg font-medium">Phone Number *</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number *</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -448,50 +444,45 @@ export default function StudentPage() {
                       onChange={(e) => setStudentData((prev) => ({ ...prev, phone: e.target.value }))}
                       placeholder="Enter your phone number"
                       required
-                      className="h-12 text-base sm:text-lg rounded-lg border border-input focus:ring-2 focus:ring-primary"
                     />
                   </div>
 
-                  <div className="space-y-3">
-                    <Label htmlFor="degree" className="text-base sm:text-lg font-medium">Education Degree *</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="degree">Education Degree *</Label>
                     <Select
                       value={studentData.degree}
                       onValueChange={(value) => setStudentData((prev) => ({ ...prev, degree: value }))}
                       required
                     >
-                      <SelectTrigger className="h-12 text-base sm:text-lg rounded-lg border border-input focus:ring-2 focus:ring-primary">
+                      <SelectTrigger>
                         <SelectValue placeholder="Select degree" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="btech" className="text-base">B.Tech</SelectItem>
-                        <SelectItem value="be" className="text-base">B.E.</SelectItem>
-                        <SelectItem value="mtech" className="text-base">M.Tech</SelectItem>
-                        <SelectItem value="me" className="text-base">M.E.</SelectItem>
-                        <SelectItem value="bsc" className="text-base">B.Sc</SelectItem>
-                        <SelectItem value="msc" className="text-base">M.Sc</SelectItem>
+                        <SelectItem value="btech">B.Tech</SelectItem>
+                        <SelectItem value="be">B.E.</SelectItem>
+                        <SelectItem value="mtech">M.Tech</SelectItem>
+                        <SelectItem value="me">M.E.</SelectItem>
+                        <SelectItem value="bsc">B.Sc</SelectItem>
+                        <SelectItem value="msc">M.Sc</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
-                  <div className="space-y-3 sm:col-span-2">
-                    <Label htmlFor="specialization" className="text-base sm:text-lg font-medium">Specialization</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="specialization">Specialization</Label>
                     <Input
                       id="specialization"
                       value={studentData.specialization}
                       onChange={(e) => setStudentData((prev) => ({ ...prev, specialization: e.target.value }))}
                       placeholder="e.g. Computer Science"
-                      className="h-12 text-base sm:text-lg rounded-lg border border-input focus:ring-2 focus:ring-primary"
                     />
                   </div>
                 </div>
 
                 <div className="flex justify-end pt-6 border-t border-border">
-                  <Button 
-                    type="submit" 
-                    className="bg-primary hover:bg-primary/90 h-12 px-6 text-base sm:text-lg font-semibold rounded-lg transition-all duration-200"
-                  >
+                  <Button type="submit" className="bg-primary hover:bg-primary/90">
                     Next
-                    <ArrowRight className="w-5 h-5 ml-2" />
+                    <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </div>
               </form>
@@ -505,45 +496,43 @@ export default function StudentPage() {
   // Core Values Step
   if (currentStep === "core-values") {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-background/80 flex items-center justify-center p-4 sm:p-6">
-        <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
+      <div className="min-h-screen bg-background p-4">
+        <div className="absolute top-4 right-4">
           <ThemeToggle />
         </div>
-        <div className="container mx-auto w-full max-w-lg sm:max-w-xl md:max-w-3xl lg:max-w-4xl py-10 sm:py-12">
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+        <div className="container mx-auto max-w-4xl py-8">
+          <div className="flex items-center justify-between mb-6">
             <Button
               onClick={() => setCurrentStep("basic-info")}
               variant="outline"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground h-12 px-6 text-base sm:text-lg rounded-lg transition-all duration-200"
+              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
+              <ArrowLeft className="w-4 h-4 mr-2" />
               Previous
             </Button>
-            <div className="text-base sm:text-lg text-muted-foreground font-medium">Step 2 of 4</div>
+            <div className="text-sm text-muted-foreground">Step 2 of 4</div>
           </div>
 
-          <div className="mb-8">
-            <Progress value={getStepProgress()} className="h-3 rounded-full bg-primary/10" />
+          <div className="mb-6">
+            <Progress value={getStepProgress()} className="h-2" />
           </div>
 
-          <Card className="shadow-2xl border-0 bg-card/90 backdrop-blur-lg rounded-2xl overflow-hidden">
-            <CardHeader className="p-6 sm:p-8">
-              <div className="flex items-center space-x-4">
-                <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center">
-                  <Heart className="w-8 h-8 text-primary" />
+          <Card className="shadow-xl border-0 bg-card/50 backdrop-blur-sm">
+            <CardHeader>
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Heart className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl sm:text-3xl font-bold">Core Values</CardTitle>
-                  <CardDescription className="text-base sm:text-lg text-muted-foreground mt-1">
-                    Select 5 values that matter most to you ({selectedValues.length}/5)
-                  </CardDescription>
+                  <CardTitle className="text-2xl">Core Values</CardTitle>
+                  <CardDescription>Select 5 values that matter most to you ({selectedValues.length}/5)</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-6 sm:p-8">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {coreValues.map((value) => (
-                  <div key={value} className="flex items-center space-x-3 p-2 rounded-md hover:bg-muted/50 transition-colors duration-200">
+                  <div key={value} className="flex items-center space-x-2">
                     <Checkbox
                       id={value}
                       checked={selectedValues.includes(value)}
@@ -555,11 +544,10 @@ export default function StudentPage() {
                         }
                       }}
                       disabled={!selectedValues.includes(value) && selectedValues.length >= 5}
-                      className="w-5 h-5"
                     />
                     <Label
                       htmlFor={value}
-                      className={`text-base sm:text-lg cursor-pointer ${
+                      className={`text-sm cursor-pointer ${
                         !selectedValues.includes(value) && selectedValues.length >= 5 ? "text-muted-foreground" : ""
                       }`}
                     >
@@ -572,11 +560,11 @@ export default function StudentPage() {
               <div className="flex justify-end pt-6 border-t border-border">
                 <Button
                   onClick={handleCoreValuesNext}
-                  className="bg-primary hover:bg-primary/90 h-12 px-6 text-base sm:text-lg font-semibold rounded-lg transition-all duration-200"
+                  className="bg-primary hover:bg-primary/90"
                   disabled={selectedValues.length !== 5}
                 >
                   Next
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             </CardContent>
@@ -589,60 +577,60 @@ export default function StudentPage() {
   // Personality Assessment Step
   if (currentStep === "personality") {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-background/80 flex items-center justify-center p-4 sm:p-6">
-        <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
+      <div className="min-h-screen bg-background p-4">
+        <div className="absolute top-4 right-4">
           <ThemeToggle />
         </div>
-        <div className="container mx-auto w-full max-w-lg sm:max-w-xl md:max-w-3xl lg:max-w-4xl py-10 sm:py-12">
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+        <div className="container mx-auto max-w-4xl py-8">
+          <div className="flex items-center justify-between mb-6">
             <Button
               onClick={() => setCurrentStep("core-values")}
               variant="outline"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground h-12 px-6 text-base sm:text-lg rounded-lg transition-all duration-200"
+              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
+              <ArrowLeft className="w-4 h-4 mr-2" />
               Previous
             </Button>
-            <div className="text-base sm:text-lg text-muted-foreground font-medium">Step 3 of 4</div>
+            <div className="text-sm text-muted-foreground">Step 3 of 4</div>
           </div>
 
-          <div className="mb-8">
-            <Progress value={getStepProgress()} className="h-3 rounded-full bg-primary/10" />
+          <div className="mb-6">
+            <Progress value={getStepProgress()} className="h-2" />
           </div>
 
-          <Card className="shadow-2xl border-0 bg-card/90 backdrop-blur-lg rounded-2xl overflow-hidden">
-            <CardHeader className="p-6 sm:p-8">
-              <div className="flex items-center space-x-4">
-                <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center">
-                  <Target className="w-8 h-8 text-primary" />
+          <Card className="shadow-xl border-0 bg-card/50 backdrop-blur-sm">
+            <CardHeader>
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Target className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl sm:text-3xl font-bold">Personality Assessment</CardTitle>
-                  <CardDescription className="text-base sm:text-lg text-muted-foreground mt-1">
+                  <CardTitle className="text-2xl">Personality Assessment</CardTitle>
+                  <CardDescription>
                     Rate how much you agree with each statement (1 = Strongly Disagree, 5 = Strongly Agree)
                   </CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-6 sm:p-8">
+            <CardContent>
               <div className="space-y-6">
                 {personalityQuestions.map((question, index) => (
-                  <div key={index} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors duration-200">
-                    <div className="mb-4 flex items-center">
-                      <span className="text-base sm:text-lg font-medium text-primary mr-3">{index + 1}.</span>
-                      <span className="text-base sm:text-lg">{question}</span>
+                  <div key={index} className="p-4 border rounded-lg">
+                    <div className="mb-4">
+                      <span className="text-sm font-medium text-primary mr-2">{index + 1}.</span>
+                      <span className="text-sm">{question}</span>
                     </div>
                     <RadioGroup
                       value={personalityAnswers[index]?.toString() || ""}
                       onValueChange={(value) =>
                         setPersonalityAnswers((prev) => ({ ...prev, [index]: Number.parseInt(value) }))
                       }
-                      className="flex flex-wrap gap-4 sm:gap-6"
+                      className="flex space-x-6"
                     >
                       {[1, 2, 3, 4, 5].map((value) => (
                         <div key={value} className="flex items-center space-x-2">
-                          <RadioGroupItem value={value.toString()} id={`q${index}-${value}`} className="w-5 h-5" />
-                          <Label htmlFor={`q${index}-${value}`} className="text-base sm:text-lg cursor-pointer">
+                          <RadioGroupItem value={value.toString()} id={`q${index}-${value}`} />
+                          <Label htmlFor={`q${index}-${value}`} className="text-sm">
                             {value}
                           </Label>
                         </div>
@@ -655,11 +643,11 @@ export default function StudentPage() {
               <div className="flex justify-end pt-6 border-t border-border">
                 <Button
                   onClick={handlePersonalityNext}
-                  className="bg-primary hover:bg-primary/90 h-12 px-6 text-base sm:text-lg font-semibold rounded-lg transition-all duration-200"
+                  className="bg-primary hover:bg-primary/90"
                   disabled={Object.keys(personalityAnswers).length !== 7}
                 >
                   Next
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </div>
             </CardContent>
@@ -672,132 +660,130 @@ export default function StudentPage() {
   // Work Preferences Step
   if (currentStep === "work-preferences") {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-background/80 flex items-center justify-center p-4 sm:p-6">
-        <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
+      <div className="min-h-screen bg-background p-4">
+        <div className="absolute top-4 right-4">
           <ThemeToggle />
         </div>
-        <div className="container mx-auto w-full max-w-lg sm:max-w-xl md:max-w-3xl lg:max-w-4xl py-10 sm:py-12">
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
+        <div className="container mx-auto max-w-4xl py-8">
+          <div className="flex items-center justify-between mb-6">
             <Button
               onClick={() => setCurrentStep("personality")}
               variant="outline"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground h-12 px-6 text-base sm:text-lg rounded-lg transition-all duration-200"
+              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
+              <ArrowLeft className="w-4 h-4 mr-2" />
               Previous
             </Button>
-            <div className="text-base sm:text-lg text-muted-foreground font-medium">Step 4 of 4</div>
+            <div className="text-sm text-muted-foreground">Step 4 of 4</div>
           </div>
 
-          <div className="mb-8">
-            <Progress value={getStepProgress()} className="h-3 rounded-full bg-primary/10" />
+          <div className="mb-6">
+            <Progress value={getStepProgress()} className="h-2" />
           </div>
 
-          <Card className="shadow-2xl border-0 bg-card/90 backdrop-blur-lg rounded-2xl overflow-hidden">
-            <CardHeader className="p-6 sm:p-8">
-              <div className="flex items-center space-x-4">
-                <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center">
-                  <Settings className="w-8 h-8 text-primary" />
+          <Card className="shadow-xl border-0 bg-card/50 backdrop-blur-sm">
+            <CardHeader>
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Settings className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl sm:text-3xl font-bold">Work Preferences</CardTitle>
-                  <CardDescription className="text-base sm:text-lg text-muted-foreground mt-1">
-                    Use the sliders to indicate your preferences (0-100)
-                  </CardDescription>
+                  <CardTitle className="text-2xl">Work Preferences</CardTitle>
+                  <CardDescription>Use the sliders to indicate your preferences (0-100)</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-6 sm:p-8">
+            <CardContent>
               <div className="space-y-8">
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <Label className="text-base sm:text-lg font-medium">Do you prefer working independently or with others?</Label>
-                    <span className="text-base sm:text-lg text-muted-foreground">{workPreferences.independence[0]}</span>
+                    <Label className="text-sm font-medium">Do you prefer working independently or with others?</Label>
+                    <span className="text-sm text-muted-foreground">{workPreferences.independence[0]}</span>
                   </div>
                   <div className="flex items-center space-x-4">
-                    <span className="text-sm sm:text-base text-muted-foreground">Independently</span>
+                    <span className="text-xs text-muted-foreground">Independently</span>
                     <Slider
                       value={workPreferences.independence}
                       onValueChange={(value) => setWorkPreferences((prev) => ({ ...prev, independence: value }))}
                       max={100}
                       step={1}
-                      className="flex-1 h-6"
+                      className="flex-1"
                     />
-                    <span className="text-sm sm:text-base text-muted-foreground">With Others</span>
+                    <span className="text-xs text-muted-foreground">With Others</span>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <Label className="text-base sm:text-lg font-medium">Do you thrive on routines or flexibility?</Label>
-                    <span className="text-base sm:text-lg text-muted-foreground">{workPreferences.routine[0]}</span>
+                    <Label className="text-sm font-medium">Do you thrive on routines or flexibility?</Label>
+                    <span className="text-sm text-muted-foreground">{workPreferences.routine[0]}</span>
                   </div>
                   <div className="flex items-center space-x-4">
-                    <span className="text-sm sm:text-base text-muted-foreground">Routines</span>
+                    <span className="text-xs text-muted-foreground">Routines</span>
                     <Slider
                       value={workPreferences.routine}
                       onValueChange={(value) => setWorkPreferences((prev) => ({ ...prev, routine: value }))}
                       max={100}
                       step={1}
-                      className="flex-1 h-6"
+                      className="flex-1"
                     />
-                    <span className="text-sm sm:text-base text-muted-foreground">Flexibility</span>
+                    <span className="text-xs text-muted-foreground">Flexibility</span>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <Label className="text-base sm:text-lg font-medium">What work pace energizes you most?</Label>
-                    <span className="text-base sm:text-lg text-muted-foreground">{workPreferences.pace[0]}</span>
+                    <Label className="text-sm font-medium">What work pace energizes you most?</Label>
+                    <span className="text-sm text-muted-foreground">{workPreferences.pace[0]}</span>
                   </div>
                   <div className="flex items-center space-x-4">
-                    <span className="text-sm sm:text-base text-muted-foreground">Steady Pace</span>
+                    <span className="text-xs text-muted-foreground">Steady Pace</span>
                     <Slider
                       value={workPreferences.pace}
                       onValueChange={(value) => setWorkPreferences((prev) => ({ ...prev, pace: value }))}
                       max={100}
                       step={1}
-                      className="flex-1 h-6"
+                      className="flex-1"
                     />
-                    <span className="text-sm sm:text-base text-muted-foreground">Fast Pace</span>
+                    <span className="text-xs text-muted-foreground">Fast Pace</span>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <Label className="text-base sm:text-lg font-medium">Do you like switching tasks or going deep into one?</Label>
-                    <span className="text-base sm:text-lg text-muted-foreground">{workPreferences.focus[0]}</span>
+                    <Label className="text-sm font-medium">Do you like switching tasks or going deep into one?</Label>
+                    <span className="text-sm text-muted-foreground">{workPreferences.focus[0]}</span>
                   </div>
                   <div className="flex items-center space-x-4">
-                    <span className="text-sm sm:text-base text-muted-foreground">Switching Tasks</span>
+                    <span className="text-xs text-muted-foreground">Switching Tasks</span>
                     <Slider
                       value={workPreferences.focus}
                       onValueChange={(value) => setWorkPreferences((prev) => ({ ...prev, focus: value }))}
                       max={100}
                       step={1}
-                      className="flex-1 h-6"
+                      className="flex-1"
                     />
-                    <span className="text-sm sm:text-base text-muted-foreground">Deep Focus</span>
+                    <span className="text-xs text-muted-foreground">Deep Focus</span>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <Label className="text-base sm:text-lg font-medium">
+                    <Label className="text-sm font-medium">
                       Do you like building things or thinking about big ideas?
                     </Label>
-                    <span className="text-base sm:text-lg text-muted-foreground">{workPreferences.building[0]}</span>
+                    <span className="text-sm text-muted-foreground">{workPreferences.building[0]}</span>
                   </div>
                   <div className="flex items-center space-x-4">
-                    <span className="text-sm sm:text-base text-muted-foreground">Building Things</span>
+                    <span className="text-xs text-muted-foreground">Building Things</span>
                     <Slider
                       value={workPreferences.building}
                       onValueChange={(value) => setWorkPreferences((prev) => ({ ...prev, building: value }))}
                       max={100}
                       step={1}
-                      className="flex-1 h-6"
+                      className="flex-1"
                     />
-                    <span className="text-sm sm:text-base text-muted-foreground">Big Ideas</span>
+                    <span className="text-xs text-muted-foreground">Big Ideas</span>
                   </div>
                 </div>
               </div>
@@ -806,17 +792,17 @@ export default function StudentPage() {
                 <Button
                   onClick={handleWorkPreferencesSubmit}
                   disabled={isSubmitting}
-                  className="bg-primary hover:bg-primary/90 h-12 px-6 text-base sm:text-lg font-semibold rounded-lg transition-all duration-200"
+                  className="bg-primary hover:bg-primary/90"
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                       Processing...
                     </>
                   ) : (
                     <>
                       View Results
-                      <CheckCircle className="w-5 h-5 ml-2" />
+                      <CheckCircle className="w-4 h-4 ml-2" />
                     </>
                   )}
                 </Button>
