@@ -76,7 +76,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     loadAdminData()
-    // Set up periodic refresh to get latest jobs
+    // Set up periodic refresh to get latest data
     const interval = setInterval(loadAdminData, 30000) // Refresh every 30 seconds
     return () => clearInterval(interval)
   }, [])
@@ -93,7 +93,7 @@ export default function AdminPage() {
       // Process jobs to ensure proper URLs
       const processedJobs = loadedJobs.map((job: Job) => {
         const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://kaizen-job-portal.vercel.app"
-        const studentUrl = `${baseUrl}/job/${job.id}`
+        const studentUrl = `${baseUrl}/student?jobId=${encodeURIComponent(job.id)}`
         const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(studentUrl)}&format=png&bgcolor=FFFFFF&color=000000&qzone=2&margin=10&ecc=M`
 
         return {
@@ -131,74 +131,10 @@ export default function AdminPage() {
 
       setCompanies(Array.from(uniqueCompanies.values()))
 
-      // Load mock students data
-      const mockStudents: Student[] = [
-        {
-          id: "1",
-          name: "Rahul Sharma",
-          email: "rahul.sharma@email.com",
-          phone: "+91 9876543210",
-          degree: "B.Tech",
-          specialization: "Computer Science",
-          assessmentCompleted: true,
-          careerMatches: ["Frontend Developer", "Full Stack Developer"],
-          fitmentScores: { frontend: 85, fullstack: 78 },
-          appliedJobs: 3,
-          registrationDate: "2024-01-15",
-        },
-        {
-          id: "2",
-          name: "Priya Patel",
-          email: "priya.patel@email.com",
-          phone: "+91 9876543211",
-          degree: "B.E.",
-          specialization: "Information Technology",
-          assessmentCompleted: true,
-          careerMatches: ["Backend Developer", "DevOps Engineer"],
-          fitmentScores: { backend: 82, devops: 75 },
-          appliedJobs: 2,
-          registrationDate: "2024-01-16",
-        },
-        {
-          id: "3",
-          name: "Amit Kumar",
-          email: "amit.kumar@email.com",
-          phone: "+91 9876543212",
-          degree: "M.Tech",
-          specialization: "Data Science",
-          assessmentCompleted: false,
-          careerMatches: [],
-          fitmentScores: {},
-          appliedJobs: 0,
-          registrationDate: "2024-01-17",
-        },
-      ]
-
-      const mockApplications: Application[] = [
-        {
-          id: "1",
-          studentName: "Rahul Sharma",
-          studentEmail: "rahul.sharma@email.com",
-          jobTitle: "Frontend Developer",
-          company: "TechCorp Solutions",
-          fitmentScore: 85,
-          status: "pending",
-          appliedDate: "2024-01-18",
-        },
-        {
-          id: "2",
-          studentName: "Priya Patel",
-          studentEmail: "priya.patel@email.com",
-          jobTitle: "Backend Developer",
-          company: "InnovateLabs",
-          fitmentScore: 82,
-          status: "reviewed",
-          appliedDate: "2024-01-17",
-        },
-      ]
-
-      setStudents(mockStudents)
-      setApplications(mockApplications)
+      // Load applications from API
+      const applicationsResponse = await fetch("/api/applications")
+      const applicationsResult = await applicationsResponse.json()
+      setApplications(applicationsResult.success ? applicationsResult.applications || [] : [])
     } catch (error) {
       console.error("Error loading admin data:", error)
       toast({
@@ -263,15 +199,6 @@ export default function AdminPage() {
     }
   }
 
-  const copyToClipboard = (text: string, type: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      toast({
-        title: "Copied!",
-        description: `${type} copied to clipboard.`,
-      })
-    })
-  }
-
   const filteredJobs = jobs.filter(
     (job) =>
       job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -287,6 +214,15 @@ export default function AdminPage() {
       student.specialization.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
+  const filteredApplications = applications.filter(
+    (app) =>
+      app.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.studentEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.status.toLowerCase().includes(searchTerm.toLowerCase()),
+  )
+
   const totalJobs = jobs.length
   const totalStudents = students.length
   const internships = jobs.filter((job) => job.job_type.toLowerCase().includes("intern")).length
@@ -294,14 +230,14 @@ export default function AdminPage() {
 
   if (loading && jobs.length === 0) {
     return (
-      <div className="min-h-screen bg-background p-4">
+      <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
         <div className="absolute top-4 right-4">
           <ThemeToggle />
         </div>
         <div className="container mx-auto max-w-7xl py-8">
           <div className="animate-pulse space-y-6">
             <div className="h-8 bg-muted rounded w-1/3"></div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="h-32 bg-muted rounded"></div>
               ))}
@@ -314,19 +250,19 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4">
+    <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
 
       <div className="container mx-auto max-w-7xl py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
-            <p className="text-muted-foreground">Manage jobs, students, and platform analytics</p>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8">
+          <div className="mb-4 sm:mb-0">
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground">Admin Dashboard</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">Manage jobs, students, and platform analytics</p>
           </div>
           <div className="flex items-center space-x-4">
-            <Button onClick={loadAdminData} disabled={loading} variant="outline" size="sm">
+            <Button onClick={loadAdminData} disabled={loading} variant="outline" size="sm" className="w-full sm:w-auto">
               {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-2" />}
               Refresh
             </Button>
@@ -334,62 +270,63 @@ export default function AdminPage() {
         </div>
 
         {/* Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
           <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Jobs</CardTitle>
+              <CardTitle className="text-sm sm:text-base font-medium text-muted-foreground">Total Jobs</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{totalJobs}</div>
+              <div className="text-2xl sm:text-3xl font-bold">{totalJobs}</div>
             </CardContent>
           </Card>
 
           <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Students</CardTitle>
+              <CardTitle className="text-sm sm:text-base font-medium text-muted-foreground">Total Students</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{totalStudents}</div>
+              <div className="text-2xl sm:text-3xl font-bold">{totalStudents}</div>
             </CardContent>
           </Card>
 
           <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Internships</CardTitle>
+              <CardTitle className="text-sm sm:text-base font-medium text-muted-foreground">Internships</CardTitle>
               <GraduationCap className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{internships}</div>
+              <div className="text-2xl sm:text-3xl font-bold">{internships}</div>
             </CardContent>
           </Card>
 
           <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Full-Time Jobs</CardTitle>
+              <CardTitle className="text-sm sm:text-base font-medium text-muted-foreground">Full-Time Jobs</CardTitle>
               <Briefcase className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{fullTimeJobs}</div>
+              <div className="text-2xl sm:text-3xl font-bold">{fullTimeJobs}</div>
             </CardContent>
           </Card>
         </div>
 
         {/* Tabs */}
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="job-management">Job Management</TabsTrigger>
-            <TabsTrigger value="student-search">Student Search</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsTrigger value="job-management" className="text-sm sm:text-base">Job Management</TabsTrigger>
+            <TabsTrigger value="student-search" className="text-sm sm:text-base">Student Search</TabsTrigger>
+            <TabsTrigger value="application-management" className="text-sm sm:text-base">Application Management</TabsTrigger>
           </TabsList>
 
           <TabsContent value="job-management" className="space-y-6">
             <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-xl">Job Postings</CardTitle>
-                <p className="text-muted-foreground">Manage all job postings on the platform</p>
+                <CardTitle className="text-xl sm:text-2xl">Job Postings</CardTitle>
+                <p className="text-muted-foreground text-sm sm:text-base">Manage all job postings on the platform</p>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 sm:p-6">
                 {/* Search */}
                 <div className="relative mb-6">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
@@ -397,7 +334,7 @@ export default function AdminPage() {
                     placeholder="Search jobs..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="w-full sm:w-1/2 pl-10 text-sm sm:text-base"
                   />
                 </div>
 
@@ -406,8 +343,8 @@ export default function AdminPage() {
                   {filteredJobs.length === 0 ? (
                     <div className="text-center py-12">
                       <Briefcase className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                      <h3 className="text-lg font-semibold mb-2">No Jobs Found</h3>
-                      <p className="text-muted-foreground">
+                      <h3 className="text-lg sm:text-xl font-semibold mb-2">No Jobs Found</h3>
+                      <p className="text-muted-foreground text-sm sm:text-base">
                         {searchTerm ? "No jobs match your search criteria." : "No jobs have been posted yet."}
                       </p>
                     </div>
@@ -415,11 +352,11 @@ export default function AdminPage() {
                     filteredJobs.map((job) => (
                       <div
                         key={job.id}
-                        className="flex items-center justify-between p-4 border rounded-lg bg-background"
+                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-6 border rounded-lg bg-background"
                       >
-                        <div className="flex-1">
+                        <div className="flex-1 mb-4 sm:mb-0">
                           <div className="flex items-center space-x-3 mb-2">
-                            <h3 className="font-semibold text-lg">{job.title}</h3>
+                            <h3 className="font-semibold text-lg sm:text-xl">{job.title}</h3>
                             <Badge
                               variant={job.job_type.toLowerCase().includes("full") ? "default" : "secondary"}
                               className={
@@ -431,18 +368,18 @@ export default function AdminPage() {
                               {job.job_type}
                             </Badge>
                           </div>
-                          <div className="text-sm text-muted-foreground mb-1">{job.company_name || "Company"}</div>
-                          <div className="text-xs text-muted-foreground">
+                          <div className="text-sm sm:text-base text-muted-foreground mb-1">{job.company_name || "Company"}</div>
+                          <div className="text-xs sm:text-sm text-muted-foreground">
                             Job ID: {job.id} • Posted: {new Date(job.created_at).toLocaleDateString()}
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2">
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => downloadQR(job.qr_code_url, job.title, job.id)}
                             disabled={qrLoading === job.id}
-                            className="text-xs px-3"
+                            className="w-full sm:w-auto text-xs sm:text-sm px-3 sm:px-4"
                           >
                             {qrLoading === job.id ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
@@ -454,7 +391,7 @@ export default function AdminPage() {
                             size="sm"
                             variant="outline"
                             onClick={() => deleteJob(job.id, job.title)}
-                            className="text-xs px-3 text-red-600 hover:bg-red-50"
+                            className="w-full sm:w-auto text-xs sm:text-sm px-3 sm:px-4 text-red-600 hover:bg-red-50"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -467,20 +404,20 @@ export default function AdminPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="student-search" className="space-y-4">
+          <TabsContent value="student-search" className="space-y-6">
             <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-xl">Student Search</CardTitle>
-                <p className="text-muted-foreground">Search and manage student profiles</p>
+                <CardTitle className="text-xl sm:text-2xl">Student Search</CardTitle>
+                <p className="text-muted-foreground text-sm sm:text-base">Search and manage student profiles</p>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 sm:p-6">
                 <div className="relative mb-6">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
                     placeholder="Search students..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="w-full sm:w-1/2 pl-10 text-sm sm:text-base"
                   />
                 </div>
 
@@ -488,19 +425,19 @@ export default function AdminPage() {
                   {filteredStudents.map((student) => (
                     <div
                       key={student.id}
-                      className="flex items-center justify-between p-4 border rounded-lg bg-background"
+                      className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-6 border rounded-lg bg-background"
                     >
-                      <div className="flex items-start space-x-4">
-                        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                          <GraduationCap className="w-6 h-6 text-primary" />
+                      <div className="flex items-start space-x-4 mb-4 sm:mb-0">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-primary/10 rounded-full flex items-center justify-center">
+                          <GraduationCap className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-semibold text-lg">{student.name}</h3>
-                          <div className="text-sm text-muted-foreground mb-1">
+                          <h3 className="font-semibold text-lg sm:text-xl">{student.name}</h3>
+                          <div className="text-sm sm:text-base text-muted-foreground mb-1">
                             {student.email} • {student.phone}
                           </div>
                           <div className="flex items-center space-x-2">
-                            <Badge variant="secondary">
+                            <Badge variant="secondary" className="text-sm sm:text-base">
                               {student.degree} - {student.specialization}
                             </Badge>
                             <Badge
@@ -516,11 +453,75 @@ export default function AdminPage() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-sm text-muted-foreground mb-1">Applications</div>
-                        <div className="text-2xl font-bold text-primary">{student.appliedJobs}</div>
+                        <div className="text-sm sm:text-base text-muted-foreground mb-1">Applications</div>
+                        <div className="text-2xl sm:text-3xl font-bold text-primary">{student.appliedJobs}</div>
                       </div>
                     </div>
                   ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="application-management" className="space-y-6">
+            <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-xl sm:text-2xl">Application Management</CardTitle>
+                <p className="text-muted-foreground text-sm sm:text-base">Review and manage student applications</p>
+              </CardHeader>
+              <CardContent className="p-4 sm:p-6">
+                <div className="relative mb-6">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Input
+                    placeholder="Search applications..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full sm:w-1/2 pl-10 text-sm sm:text-base"
+                  />
+                </div>
+
+                <div className="space-y-4">
+                  {filteredApplications.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Users className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                      <h3 className="text-lg sm:text-xl font-semibold mb-2">No Applications Found</h3>
+                      <p className="text-muted-foreground text-sm sm:text-base">
+                        {searchTerm ? "No applications match your search criteria." : "No applications have been submitted yet."}
+                      </p>
+                    </div>
+                  ) : (
+                    filteredApplications.map((app) => (
+                      <div
+                        key={app.id}
+                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-6 border rounded-lg bg-background"
+                      >
+                        <div className="flex-1 mb-4 sm:mb-0">
+                          <h3 className="font-semibold text-lg sm:text-xl">{app.studentName}</h3>
+                          <div className="text-sm sm:text-base text-muted-foreground mb-1">
+                            {app.studentEmail} • Applied for: {app.jobTitle}
+                          </div>
+                          <div className="text-xs sm:text-sm text-muted-foreground">
+                            Company: {app.company} • Date: {new Date(app.appliedDate).toLocaleDateString()}
+                          </div>
+                          <Badge
+                            className={
+                              app.status === "accepted"
+                                ? "bg-green-100 text-green-800"
+                                : app.status === "rejected"
+                                ? "bg-red-100 text-red-800"
+                                : "bg-yellow-100 text-yellow-800"
+                            }
+                          >
+                            {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                          </Badge>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm sm:text-base text-muted-foreground mb-1">Fitment Score</div>
+                          <div className="text-2xl sm:text-3xl font-bold text-primary">{app.fitmentScore}%</div>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
