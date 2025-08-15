@@ -52,22 +52,27 @@ interface Job {
   created_at: string
 }
 
-interface Application {
+interface Assessment {
   id: string
-  studentName: string
-  studentEmail: string
-  jobTitle: string
+  name: string
+  email: string
+  phone: string
+  degree: string
+  specialization: string
+  core_values: Record<string, number>[]
+  work_preferences: Record<string, number>[]
+  personality_answers: Record<number, number>
+  job_id: string
+  job_title: string
   company: string
-  fitmentScore: number
-  status: "pending" | "reviewed" | "accepted" | "rejected"
-  appliedDate: string
+  created_at: string
 }
 
 export default function AdminPage() {
   const [students, setStudents] = useState<Student[]>([])
   const [companies, setCompanies] = useState<Company[]>([])
   const [jobs, setJobs] = useState<Job[]>([])
-  const [applications, setApplications] = useState<Application[]>([])
+  const [assessments, setAssessments] = useState<Assessment[]>([])
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedTab, setSelectedTab] = useState("job-management")
@@ -131,10 +136,27 @@ export default function AdminPage() {
 
       setCompanies(Array.from(uniqueCompanies.values()))
 
-      // Load applications from API
-      const applicationsResponse = await fetch("/api/applications")
-      const applicationsResult = await applicationsResponse.json()
-      setApplications(applicationsResult.success ? applicationsResult.applications || [] : [])
+      // Load assessments from API
+      const assessmentsResponse = await fetch("/api/assessments")
+      const assessmentsResult = await assessmentsResponse.json()
+      const loadedAssessments = assessmentsResult.success ? assessmentsResult.assessments || [] : []
+      setAssessments(loadedAssessments)
+
+      // Transform assessments into Student format for display
+      const transformedStudents = loadedAssessments.map((assessment: Assessment) => ({
+        id: assessment.id,
+        name: assessment.name,
+        email: assessment.email,
+        phone: assessment.phone,
+        degree: assessment.degree,
+        specialization: assessment.specialization,
+        assessmentCompleted: true, // Assume completion since data exists
+        careerMatches: assessment.job_title ? [assessment.job_title] : [], // Derive from job title
+        fitmentScores: {}, // To be calculated if needed (e.g., from personality_answers)
+        appliedJobs: 1, // Assume 1 application per assessment for now
+        registrationDate: assessment.created_at,
+      }))
+      setStudents(transformedStudents)
     } catch (error) {
       console.error("Error loading admin data:", error)
       toast({
@@ -214,13 +236,12 @@ export default function AdminPage() {
       student.specialization.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  const filteredApplications = applications.filter(
-    (app) =>
-      app.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.studentEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      app.status.toLowerCase().includes(searchTerm.toLowerCase()),
+  const filteredAssessments = assessments.filter(
+    (assessment) =>
+      assessment.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      assessment.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      assessment.job_title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      assessment.company.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
   const totalJobs = jobs.length
@@ -422,42 +443,52 @@ export default function AdminPage() {
                 </div>
 
                 <div className="space-y-4">
-                  {filteredStudents.map((student) => (
-                    <div
-                      key={student.id}
-                      className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-6 border rounded-lg bg-background"
-                    >
-                      <div className="flex items-start space-x-4 mb-4 sm:mb-0">
-                        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-primary/10 rounded-full flex items-center justify-center">
-                          <GraduationCap className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-lg sm:text-xl">{student.name}</h3>
-                          <div className="text-sm sm:text-base text-muted-foreground mb-1">
-                            {student.email} • {student.phone}
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Badge variant="secondary" className="text-sm sm:text-base">
-                              {student.degree} - {student.specialization}
-                            </Badge>
-                            <Badge
-                              className={
-                                student.assessmentCompleted
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-yellow-100 text-yellow-800"
-                              }
-                            >
-                              {student.assessmentCompleted ? "Assessment Complete" : "Assessment Pending"}
-                            </Badge>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm sm:text-base text-muted-foreground mb-1">Applications</div>
-                        <div className="text-2xl sm:text-3xl font-bold text-primary">{student.appliedJobs}</div>
-                      </div>
+                  {filteredStudents.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Users className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+                      <h3 className="text-lg sm:text-xl font-semibold mb-2">No Students Found</h3>
+                      <p className="text-muted-foreground text-sm sm:text-base">
+                        {searchTerm ? "No students match your search criteria." : "No students have been registered yet."}
+                      </p>
                     </div>
-                  ))}
+                  ) : (
+                    filteredStudents.map((student) => (
+                      <div
+                        key={student.id}
+                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-6 border rounded-lg bg-background"
+                      >
+                        <div className="flex items-start space-x-4 mb-4 sm:mb-0">
+                          <div className="w-12 h-12 sm:w-14 sm:h-14 bg-primary/10 rounded-full flex items-center justify-center">
+                            <GraduationCap className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-lg sm:text-xl">{student.name}</h3>
+                            <div className="text-sm sm:text-base text-muted-foreground mb-1">
+                              {student.email} • {student.phone}
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Badge variant="secondary" className="text-sm sm:text-base">
+                                {student.degree} - {student.specialization}
+                              </Badge>
+                              <Badge
+                                className={
+                                  student.assessmentCompleted
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-yellow-100 text-yellow-800"
+                                }
+                              >
+                                {student.assessmentCompleted ? "Assessment Complete" : "Assessment Pending"}
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm sm:text-base text-muted-foreground mb-1">Applications</div>
+                          <div className="text-2xl sm:text-3xl font-bold text-primary">{student.appliedJobs}</div>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -481,7 +512,7 @@ export default function AdminPage() {
                 </div>
 
                 <div className="space-y-4">
-                  {filteredApplications.length === 0 ? (
+                  {filteredAssessments.length === 0 ? (
                     <div className="text-center py-12">
                       <Users className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
                       <h3 className="text-lg sm:text-xl font-semibold mb-2">No Applications Found</h3>
@@ -490,34 +521,24 @@ export default function AdminPage() {
                       </p>
                     </div>
                   ) : (
-                    filteredApplications.map((app) => (
+                    filteredAssessments.map((assessment) => (
                       <div
-                        key={app.id}
+                        key={assessment.id}
                         className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-6 border rounded-lg bg-background"
                       >
                         <div className="flex-1 mb-4 sm:mb-0">
-                          <h3 className="font-semibold text-lg sm:text-xl">{app.studentName}</h3>
+                          <h3 className="font-semibold text-lg sm:text-xl">{assessment.name}</h3>
                           <div className="text-sm sm:text-base text-muted-foreground mb-1">
-                            {app.studentEmail} • Applied for: {app.jobTitle}
+                            {assessment.email} • Applied for: {assessment.job_title}
                           </div>
                           <div className="text-xs sm:text-sm text-muted-foreground">
-                            Company: {app.company} • Date: {new Date(app.appliedDate).toLocaleDateString()}
+                            Company: {assessment.company} • Date: {new Date(assessment.created_at).toLocaleDateString()}
                           </div>
-                          <Badge
-                            className={
-                              app.status === "accepted"
-                                ? "bg-green-100 text-green-800"
-                                : app.status === "rejected"
-                                ? "bg-red-100 text-red-800"
-                                : "bg-yellow-100 text-yellow-800"
-                            }
-                          >
-                            {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
-                          </Badge>
+                          <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge> {/* Placeholder status */}
                         </div>
                         <div className="text-right">
                           <div className="text-sm sm:text-base text-muted-foreground mb-1">Fitment Score</div>
-                          <div className="text-2xl sm:text-3xl font-bold text-primary">{app.fitmentScore}%</div>
+                          <div className="text-2xl sm:text-3xl font-bold text-primary">N/A</div> {/* To be calculated */}
                         </div>
                       </div>
                     ))
