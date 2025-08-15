@@ -33,7 +33,6 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
-import { ThemeToggle } from "@/components/theme-toggle"
 
 interface Job {
   id: string
@@ -380,51 +379,49 @@ export default function StudentPage() {
   // Basic Info Step
   if (currentStep === "basic-info") {
     return (
-      <div className="min-h-screen bg-background p-4">
-        <div className="absolute top-4 right-4">
-          <ThemeToggle />
-        </div>
-        <div className="container mx-auto max-w-4xl py-8">
-          <div className="flex items-center justify-between mb-6">
-            <Link href="/" className="inline-flex items-center text-primary hover:text-primary/80 group">
-              <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
+      <div className="min-h-screen bg-background py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-screen-md">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <Link href="/" className="inline-flex items-center text-primary hover:bg-primary/10 text-sm sm:text-base font-medium transition-colors">
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2 transition-transform group-hover:-translate-x-1" />
               Back to Home
             </Link>
-            <div className="text-sm text-muted-foreground">Step 1 of 4</div>
+            <div className="text-sm sm:text-base text-muted-foreground">Step 1 of 4</div>
           </div>
 
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <Progress value={getStepProgress()} className="h-2" />
           </div>
 
-          <Card className="shadow-xl border-0 bg-card/50 backdrop-blur-sm">
+          <Card className="shadow-lg border-0 bg-card/80 backdrop-blur-sm rounded-xl">
             <CardHeader>
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                  <User className="w-6 h-6 text-primary" />
+              <div className="flex items-center space-x-3 sm:space-x-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <User className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl">Basic Information</CardTitle>
-                  <CardDescription>Let's start with your basic details</CardDescription>
+                  <CardTitle className="text-lg sm:text-xl lg:text-2xl font-bold">Basic Information</CardTitle>
+                  <CardDescription className="text-sm sm:text-base">Let's start with your basic details</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={handleBasicInfoSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent className="p-4 sm:p-6 lg:p-8">
+              <form onSubmit={handleBasicInfoSubmit} className="space-y-4 sm:space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="fullName">Name *</Label>
+                    <Label htmlFor="fullName" className="text-sm sm:text-base">Name *</Label>
                     <Input
                       id="fullName"
                       value={studentData.fullName}
                       onChange={(e) => setStudentData((prev) => ({ ...prev, fullName: e.target.value }))}
                       placeholder="Enter your full name"
                       required
+                      className="w-full text-sm sm:text-base rounded-lg border-gray-300"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email *</Label>
+                    <Label htmlFor="email" className="text-sm sm:text-base">Email *</Label>
                     <Input
                       id="email"
                       type="email"
@@ -432,11 +429,12 @@ export default function StudentPage() {
                       onChange={(e) => setStudentData((prev) => ({ ...prev, email: e.target.value }))}
                       placeholder="your.email@example.com"
                       required
+                      className="w-full text-sm sm:text-base rounded-lg border-gray-300"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number *</Label>
+                    <Label htmlFor="phone" className="text-sm sm:text-base">Phone Number *</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -444,45 +442,50 @@ export default function StudentPage() {
                       onChange={(e) => setStudentData((prev) => ({ ...prev, phone: e.target.value }))}
                       placeholder="Enter your phone number"
                       required
+                      className="w-full text-sm sm:text-base rounded-lg border-gray-300"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="degree">Education Degree *</Label>
+                    <Label htmlFor="degree" className="text-sm sm:text-base">Education Degree *</Label>
                     <Select
                       value={studentData.degree}
                       onValueChange={(value) => setStudentData((prev) => ({ ...prev, degree: value }))}
                       required
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full text-sm sm:text-base rounded-lg border-gray-300">
                         <SelectValue placeholder="Select degree" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="btech">B.Tech</SelectItem>
-                        <SelectItem value="be">B.E.</SelectItem>
-                        <SelectItem value="mtech">M.Tech</SelectItem>
-                        <SelectItem value="me">M.E.</SelectItem>
-                        <SelectItem value="bsc">B.Sc</SelectItem>
-                        <SelectItem value="msc">M.Sc</SelectItem>
+                        <SelectItem value="btech" className="text-sm sm:text-base">B.Tech</SelectItem>
+                        <SelectItem value="be" className="text-sm sm:text-base">B.E.</SelectItem>
+                        <SelectItem value="mtech" className="text-sm sm:text-base">M.Tech</SelectItem>
+                        <SelectItem value="me" className="text-sm sm:text-base">M.E.</SelectItem>
+                        <SelectItem value="bsc" className="text-sm sm:text-base">B.Sc</SelectItem>
+                        <SelectItem value="msc" className="text-sm sm:text-base">M.Sc</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="specialization">Specialization</Label>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="specialization" className="text-sm sm:text-base">Specialization</Label>
                     <Input
                       id="specialization"
                       value={studentData.specialization}
                       onChange={(e) => setStudentData((prev) => ({ ...prev, specialization: e.target.value }))}
                       placeholder="e.g. Computer Science"
+                      className="w-full text-sm sm:text-base rounded-lg border-gray-300"
                     />
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-6 border-t border-border">
-                  <Button type="submit" className="bg-primary hover:bg-primary/90">
+                <div className="flex justify-end pt-4 sm:pt-6 border-t border-border">
+                  <Button
+                    type="submit"
+                    className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-4 sm:px-6 text-sm sm:text-base font-semibold rounded-lg"
+                  >
                     Next
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                   </Button>
                 </div>
               </form>
@@ -496,41 +499,38 @@ export default function StudentPage() {
   // Core Values Step
   if (currentStep === "core-values") {
     return (
-      <div className="min-h-screen bg-background p-4">
-        <div className="absolute top-4 right-4">
-          <ThemeToggle />
-        </div>
-        <div className="container mx-auto max-w-4xl py-8">
-          <div className="flex items-center justify-between mb-6">
+      <div className="min-h-screen bg-background py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-screen-md">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
             <Button
               onClick={() => setCurrentStep("basic-info")}
               variant="outline"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+              className="w-full sm:w-auto border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground text-sm sm:text-base font-semibold rounded-lg transition-colors"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Previous
             </Button>
-            <div className="text-sm text-muted-foreground">Step 2 of 4</div>
+            <div className="text-sm sm:text-base text-muted-foreground">Step 2 of 4</div>
           </div>
 
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <Progress value={getStepProgress()} className="h-2" />
           </div>
 
-          <Card className="shadow-xl border-0 bg-card/50 backdrop-blur-sm">
+          <Card className="shadow-lg border-0 bg-card/80 backdrop-blur-sm rounded-xl">
             <CardHeader>
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                  <Heart className="w-6 h-6 text-primary" />
+              <div className="flex items-center space-x-3 sm:space-x-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl">Core Values</CardTitle>
-                  <CardDescription>Select 5 values that matter most to you ({selectedValues.length}/5)</CardDescription>
+                  <CardTitle className="text-lg sm:text-xl lg:text-2xl font-bold">Core Values</CardTitle>
+                  <CardDescription className="text-sm sm:text-base">Select 5 values that matter most to you ({selectedValues.length}/5)</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <CardContent className="p-4 sm:p-6 lg:p-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
                 {coreValues.map((value) => (
                   <div key={value} className="flex items-center space-x-2">
                     <Checkbox
@@ -544,10 +544,11 @@ export default function StudentPage() {
                         }
                       }}
                       disabled={!selectedValues.includes(value) && selectedValues.length >= 5}
+                      className="h-4 w-4 sm:h-5 sm:w-5"
                     />
                     <Label
                       htmlFor={value}
-                      className={`text-sm cursor-pointer ${
+                      className={`text-sm sm:text-base cursor-pointer ${
                         !selectedValues.includes(value) && selectedValues.length >= 5 ? "text-muted-foreground" : ""
                       }`}
                     >
@@ -557,14 +558,14 @@ export default function StudentPage() {
                 ))}
               </div>
 
-              <div className="flex justify-end pt-6 border-t border-border">
+              <div className="flex justify-end pt-4 sm:pt-6 border-t border-border">
                 <Button
                   onClick={handleCoreValuesNext}
-                  className="bg-primary hover:bg-primary/90"
+                  className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-4 sm:px-6 text-sm sm:text-base font-semibold rounded-lg"
                   disabled={selectedValues.length !== 5}
                 >
                   Next
-                  <ArrowRight className="w-4 h-4 ml-2" />
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                 </Button>
               </div>
             </CardContent>
@@ -577,60 +578,57 @@ export default function StudentPage() {
   // Personality Assessment Step
   if (currentStep === "personality") {
     return (
-      <div className="min-h-screen bg-background p-4">
-        <div className="absolute top-4 right-4">
-          <ThemeToggle />
-        </div>
-        <div className="container mx-auto max-w-4xl py-8">
-          <div className="flex items-center justify-between mb-6">
+      <div className="min-h-screen bg-background py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-screen-md">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
             <Button
               onClick={() => setCurrentStep("core-values")}
               variant="outline"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+              className="w-full sm:w-auto border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground text-sm sm:text-base font-semibold rounded-lg transition-colors"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Previous
             </Button>
-            <div className="text-sm text-muted-foreground">Step 3 of 4</div>
+            <div className="text-sm sm:text-base text-muted-foreground">Step 3 of 4</div>
           </div>
 
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <Progress value={getStepProgress()} className="h-2" />
           </div>
 
-          <Card className="shadow-xl border-0 bg-card/50 backdrop-blur-sm">
+          <Card className="shadow-lg border-0 bg-card/80 backdrop-blur-sm rounded-xl">
             <CardHeader>
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                  <Target className="w-6 h-6 text-primary" />
+              <div className="flex items-center space-x-3 sm:space-x-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Target className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl">Personality Assessment</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-lg sm:text-xl lg:text-2xl font-bold">Personality Assessment</CardTitle>
+                  <CardDescription className="text-sm sm:text-base">
                     Rate how much you agree with each statement (1 = Strongly Disagree, 5 = Strongly Agree)
                   </CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
+            <CardContent className="p-4 sm:p-6 lg:p-8">
+              <div className="space-y-3 sm:space-y-4 lg:space-y-5">
                 {personalityQuestions.map((question, index) => (
-                  <div key={index} className="p-4 border rounded-lg">
-                    <div className="mb-4">
-                      <span className="text-sm font-medium text-primary mr-2">{index + 1}.</span>
-                      <span className="text-sm">{question}</span>
+                  <div key={index} className="p-3 sm:p-4 lg:p-5 border rounded-lg bg-background/50">
+                    <div className="mb-2 sm:mb-3">
+                      <span className="text-sm sm:text-base font-medium text-primary mr-2">{index + 1}.</span>
+                      <span className="text-sm sm:text-base">{question}</span>
                     </div>
                     <RadioGroup
                       value={personalityAnswers[index]?.toString() || ""}
                       onValueChange={(value) =>
                         setPersonalityAnswers((prev) => ({ ...prev, [index]: Number.parseInt(value) }))
                       }
-                      className="flex space-x-6"
+                      className="flex flex-wrap justify-center gap-3 sm:gap-4 lg:gap-6"
                     >
                       {[1, 2, 3, 4, 5].map((value) => (
                         <div key={value} className="flex items-center space-x-2">
-                          <RadioGroupItem value={value.toString()} id={`q${index}-${value}`} />
-                          <Label htmlFor={`q${index}-${value}`} className="text-sm">
+                          <RadioGroupItem value={value.toString()} id={`q${index}-${value}`} className="h-4 w-4 sm:h-5 sm:w-5" />
+                          <Label htmlFor={`q${index}-${value}`} className="text-sm sm:text-base cursor-pointer">
                             {value}
                           </Label>
                         </div>
@@ -640,14 +638,14 @@ export default function StudentPage() {
                 ))}
               </div>
 
-              <div className="flex justify-end pt-6 border-t border-border">
+              <div className="flex justify-end pt-4 sm:pt-6 border-t border-border">
                 <Button
                   onClick={handlePersonalityNext}
-                  className="bg-primary hover:bg-primary/90"
+                  className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-4 sm:px-6 text-sm sm:text-base font-semibold rounded-lg"
                   disabled={Object.keys(personalityAnswers).length !== 7}
                 >
                   Next
-                  <ArrowRight className="w-4 h-4 ml-2" />
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                 </Button>
               </div>
             </CardContent>
@@ -660,48 +658,45 @@ export default function StudentPage() {
   // Work Preferences Step
   if (currentStep === "work-preferences") {
     return (
-      <div className="min-h-screen bg-background p-4">
-        <div className="absolute top-4 right-4">
-          <ThemeToggle />
-        </div>
-        <div className="container mx-auto max-w-4xl py-8">
-          <div className="flex items-center justify-between mb-6">
+      <div className="min-h-screen bg-background py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-screen-md">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
             <Button
               onClick={() => setCurrentStep("personality")}
               variant="outline"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+              className="w-full sm:w-auto border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground text-sm sm:text-base font-semibold rounded-lg transition-colors"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Previous
             </Button>
-            <div className="text-sm text-muted-foreground">Step 4 of 4</div>
+            <div className="text-sm sm:text-base text-muted-foreground">Step 4 of 4</div>
           </div>
 
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <Progress value={getStepProgress()} className="h-2" />
           </div>
 
-          <Card className="shadow-xl border-0 bg-card/50 backdrop-blur-sm">
+          <Card className="shadow-lg border-0 bg-card/80 backdrop-blur-sm rounded-xl">
             <CardHeader>
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                  <Settings className="w-6 h-6 text-primary" />
+              <div className="flex items-center space-x-3 sm:space-x-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Settings className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl">Work Preferences</CardTitle>
-                  <CardDescription>Use the sliders to indicate your preferences (0-100)</CardDescription>
+                  <CardTitle className="text-lg sm:text-xl lg:text-2xl font-bold">Work Preferences</CardTitle>
+                  <CardDescription className="text-sm sm:text-base">Use the sliders to indicate your preferences (0-100)</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-8">
-                <div className="space-y-4">
+            <CardContent className="p-4 sm:p-6 lg:p-8">
+              <div className="space-y-5 sm:space-y-6 lg:space-y-8">
+                <div className="space-y-3 sm:space-y-4">
                   <div className="flex justify-between items-center">
-                    <Label className="text-sm font-medium">Do you prefer working independently or with others?</Label>
-                    <span className="text-sm text-muted-foreground">{workPreferences.independence[0]}</span>
+                    <Label className="text-sm sm:text-base font-medium">Do you prefer working independently or with others?</Label>
+                    <span className="text-sm sm:text-base text-muted-foreground">{workPreferences.independence[0]}</span>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <span className="text-xs text-muted-foreground">Independently</span>
+                  <div className="flex items-center space-x-3 sm:space-x-4 lg:space-x-6">
+                    <span className="text-xs sm:text-sm text-muted-foreground">Independently</span>
                     <Slider
                       value={workPreferences.independence}
                       onValueChange={(value) => setWorkPreferences((prev) => ({ ...prev, independence: value }))}
@@ -709,17 +704,17 @@ export default function StudentPage() {
                       step={1}
                       className="flex-1"
                     />
-                    <span className="text-xs text-muted-foreground">With Others</span>
+                    <span className="text-xs sm:text-sm text-muted-foreground">With Others</span>
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div className="flex justify-between items-center">
-                    <Label className="text-sm font-medium">Do you thrive on routines or flexibility?</Label>
-                    <span className="text-sm text-muted-foreground">{workPreferences.routine[0]}</span>
+                    <Label className="text-sm sm:text-base font-medium">Do you thrive on routines or flexibility?</Label>
+                    <span className="text-sm sm:text-base text-muted-foreground">{workPreferences.routine[0]}</span>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <span className="text-xs text-muted-foreground">Routines</span>
+                  <div className="flex items-center space-x-3 sm:space-x-4 lg:space-x-6">
+                    <span className="text-xs sm:text-sm text-muted-foreground">Routines</span>
                     <Slider
                       value={workPreferences.routine}
                       onValueChange={(value) => setWorkPreferences((prev) => ({ ...prev, routine: value }))}
@@ -727,17 +722,17 @@ export default function StudentPage() {
                       step={1}
                       className="flex-1"
                     />
-                    <span className="text-xs text-muted-foreground">Flexibility</span>
+                    <span className="text-xs sm:text-sm text-muted-foreground">Flexibility</span>
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div className="flex justify-between items-center">
-                    <Label className="text-sm font-medium">What work pace energizes you most?</Label>
-                    <span className="text-sm text-muted-foreground">{workPreferences.pace[0]}</span>
+                    <Label className="text-sm sm:text-base font-medium">What work pace energizes you most?</Label>
+                    <span className="text-sm sm:text-base text-muted-foreground">{workPreferences.pace[0]}</span>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <span className="text-xs text-muted-foreground">Steady Pace</span>
+                  <div className="flex items-center space-x-3 sm:space-x-4 lg:space-x-6">
+                    <span className="text-xs sm:text-sm text-muted-foreground">Steady Pace</span>
                     <Slider
                       value={workPreferences.pace}
                       onValueChange={(value) => setWorkPreferences((prev) => ({ ...prev, pace: value }))}
@@ -745,17 +740,17 @@ export default function StudentPage() {
                       step={1}
                       className="flex-1"
                     />
-                    <span className="text-xs text-muted-foreground">Fast Pace</span>
+                    <span className="text-xs sm:text-sm text-muted-foreground">Fast Pace</span>
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div className="flex justify-between items-center">
-                    <Label className="text-sm font-medium">Do you like switching tasks or going deep into one?</Label>
-                    <span className="text-sm text-muted-foreground">{workPreferences.focus[0]}</span>
+                    <Label className="text-sm sm:text-base font-medium">Do you like switching tasks or going deep into one?</Label>
+                    <span className="text-sm sm:text-base text-muted-foreground">{workPreferences.focus[0]}</span>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <span className="text-xs text-muted-foreground">Switching Tasks</span>
+                  <div className="flex items-center space-x-3 sm:space-x-4 lg:space-x-6">
+                    <span className="text-xs sm:text-sm text-muted-foreground">Switching Tasks</span>
                     <Slider
                       value={workPreferences.focus}
                       onValueChange={(value) => setWorkPreferences((prev) => ({ ...prev, focus: value }))}
@@ -763,19 +758,19 @@ export default function StudentPage() {
                       step={1}
                       className="flex-1"
                     />
-                    <span className="text-xs text-muted-foreground">Deep Focus</span>
+                    <span className="text-xs sm:text-sm text-muted-foreground">Deep Focus</span>
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div className="flex justify-between items-center">
-                    <Label className="text-sm font-medium">
+                    <Label className="text-sm sm:text-base font-medium">
                       Do you like building things or thinking about big ideas?
                     </Label>
-                    <span className="text-sm text-muted-foreground">{workPreferences.building[0]}</span>
+                    <span className="text-sm sm:text-base text-muted-foreground">{workPreferences.building[0]}</span>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <span className="text-xs text-muted-foreground">Building Things</span>
+                  <div className="flex items-center space-x-3 sm:space-x-4 lg:space-x-6">
+                    <span className="text-xs sm:text-sm text-muted-foreground">Building Things</span>
                     <Slider
                       value={workPreferences.building}
                       onValueChange={(value) => setWorkPreferences((prev) => ({ ...prev, building: value }))}
@@ -783,26 +778,26 @@ export default function StudentPage() {
                       step={1}
                       className="flex-1"
                     />
-                    <span className="text-xs text-muted-foreground">Big Ideas</span>
+                    <span className="text-xs sm:text-sm text-muted-foreground">Big Ideas</span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-end pt-6 border-t border-border">
+              <div className="flex justify-end pt-4 sm:pt-6 border-t border-border">
                 <Button
                   onClick={handleWorkPreferencesSubmit}
                   disabled={isSubmitting}
-                  className="bg-primary hover:bg-primary/90"
+                  className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-4 sm:px-6 text-sm sm:text-base font-semibold rounded-lg"
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white mr-2"></div>
                       Processing...
                     </>
                   ) : (
                     <>
                       View Results
-                      <CheckCircle className="w-4 h-4 ml-2" />
+                      <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                     </>
                   )}
                 </Button>
@@ -817,40 +812,37 @@ export default function StudentPage() {
   // Results Step
   if (currentStep === "results") {
     return (
-      <div className="min-h-screen bg-background p-4">
-        <div className="absolute top-4 right-4">
-          <ThemeToggle />
-        </div>
-        <div className="container mx-auto max-w-6xl py-8">
-          <Link href="/" className="inline-flex items-center text-primary hover:text-primary/80 mb-8 group">
-            <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
+      <div className="min-h-screen bg-background py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-screen-lg">
+          <Link href="/" className="inline-flex items-center text-primary hover:bg-primary/10 mb-6 sm:mb-8 text-sm sm:text-base font-medium transition-colors group">
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2 transition-transform group-hover:-translate-x-1" />
             Back to Home
           </Link>
 
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-8 h-8 text-green-600" />
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-green-600" />
             </div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Your Career Recommendations</h1>
-            <p className="text-muted-foreground">Based on your assessment, here are your top career matches</p>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">Your Career Recommendations</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Based on your assessment, here are your top career matches</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {careerMatches.map((match, index) => {
               const IconComponent = match.icon
               return (
-                <Card key={match.id} className="shadow-lg hover:shadow-xl transition-all duration-300">
+                <Card key={match.id} className="shadow-lg border-0 bg-card/80 backdrop-blur-sm rounded-xl hover:shadow-xl transition-all duration-300">
                   <CardHeader>
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-start space-x-3">
-                        <div className={`w-12 h-12 ${match.color} rounded-lg flex items-center justify-center`}>
-                          <IconComponent className="w-6 h-6 text-white" />
+                    <div className="flex items-start justify-between mb-3 sm:mb-4">
+                      <div className="flex items-start space-x-3 sm:space-x-4">
+                        <div className={`w-10 h-10 sm:w-12 sm:h-12 ${match.color} rounded-lg flex items-center justify-center`}>
+                          <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
                         <div>
-                          <CardTitle className="text-lg">{match.title}</CardTitle>
+                          <CardTitle className="text-base sm:text-lg font-medium">{match.title}</CardTitle>
                           <div className="flex items-center space-x-2 mt-1">
                             <Badge
-                              className={`text-xs ${
+                              className={`text-xs sm:text-sm ${
                                 match.fitmentScore >= 85
                                   ? "bg-green-100 text-green-600"
                                   : match.fitmentScore >= 75
@@ -865,16 +857,16 @@ export default function StudentPage() {
                       </div>
                     </div>
 
-                    <CardDescription className="text-sm text-muted-foreground mb-4">
+                    <CardDescription className="text-sm sm:text-base text-muted-foreground mb-3 sm:mb-4">
                       {match.description}
                     </CardDescription>
 
                     <div className="space-y-3">
                       <div>
-                        <h4 className="text-xs font-medium text-muted-foreground mb-2">KEY SKILLS</h4>
-                        <div className="flex flex-wrap gap-1">
+                        <h4 className="text-xs sm:text-sm font-medium text-muted-foreground mb-2">KEY SKILLS</h4>
+                        <div className="flex flex-wrap gap-1 sm:gap-2">
                           {match.skills.map((skill) => (
-                            <Badge key={skill} variant="secondary" className="text-xs">
+                            <Badge key={skill} variant="secondary" className="text-xs sm:text-sm">
                               {skill}
                             </Badge>
                           ))}
@@ -887,14 +879,13 @@ export default function StudentPage() {
             })}
           </div>
 
-          <div className="text-center">
+          <div className="text-center mt-6 sm:mt-8">
             <Button
               onClick={() => setCurrentStep("opportunities")}
-              size="lg"
-              className="bg-primary hover:bg-primary/90"
+              className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-4 sm:px-6 text-sm sm:text-base font-semibold rounded-lg"
             >
               Explore Opportunities
-              <ArrowRight className="w-4 h-4 ml-2" />
+              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
             </Button>
           </div>
         </div>
@@ -905,56 +896,53 @@ export default function StudentPage() {
   // Opportunities Step
   if (currentStep === "opportunities") {
     return (
-      <div className="min-h-screen bg-background p-4">
-        <div className="absolute top-4 right-4">
-          <ThemeToggle />
-        </div>
-        <div className="container mx-auto max-w-6xl py-8">
+      <div className="min-h-screen bg-background py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-screen-lg">
           <Button
             onClick={() => setCurrentStep("results")}
             variant="outline"
-            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground mb-8"
+            className="w-full sm:w-auto border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground mb-6 sm:mb-8 text-sm sm:text-base font-semibold rounded-lg transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
             Back to Results
           </Button>
 
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Available Opportunities</h1>
-            <p className="text-muted-foreground">Explore job openings in your recommended career paths</p>
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-2">Available Opportunities</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Explore job openings in your recommended career paths</p>
           </div>
 
-          <div className="grid gap-6">
+          <div className="grid gap-4 sm:gap-6 lg:gap-8">
             {careerMatches.map((match) => {
               const IconComponent = match.icon
               const isInterested = interestedRoles.includes(match.id)
 
               return (
-                <Card key={match.id} className="shadow-lg hover:shadow-xl transition-all duration-300">
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-start space-x-4">
-                        <div className={`w-12 h-12 ${match.color} rounded-lg flex items-center justify-center`}>
-                          <IconComponent className="w-6 h-6 text-white" />
+                <Card key={match.id} className="shadow-lg border-0 bg-card/80 backdrop-blur-sm rounded-xl hover:shadow-xl transition-all duration-300">
+                  <CardContent className="p-4 sm:p-6 lg:p-8">
+                    <div className="flex flex-col sm:flex-row items-start justify-between mb-3 sm:mb-4">
+                      <div className="flex items-start space-x-3 sm:space-x-4 w-full">
+                        <div className={`w-10 h-10 sm:w-12 sm:h-12 ${match.color} rounded-lg flex items-center justify-center`}>
+                          <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-semibold text-foreground mb-1">{match.title}</h3>
-                          <div className="flex items-center space-x-4 text-muted-foreground mb-2">
+                          <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-foreground mb-1">{match.title}</h3>
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-muted-foreground mb-2 sm:mb-3">
                             <div className="flex items-center space-x-1">
-                              <Briefcase className="w-4 h-4" />
-                              <span className="font-medium">{match.openings.toLocaleString()} openings available</span>
+                              <Briefcase className="w-4 h-4 sm:w-5 sm:h-5" />
+                              <span className="text-sm sm:text-base font-medium">{match.openings.toLocaleString()} openings</span>
                             </div>
                             <div className="flex items-center space-x-1">
-                              <Target className="w-4 h-4" />
-                              <span>{match.fitmentScore}% match</span>
+                              <Target className="w-4 h-4 sm:w-5 sm:h-5" />
+                              <span className="text-sm sm:text-base">{match.fitmentScore}% match</span>
                             </div>
                           </div>
-                          <p className="text-muted-foreground mb-3">{match.description}</p>
+                          <p className="text-sm sm:text-base text-muted-foreground mb-2 sm:mb-3 line-clamp-3">{match.description}</p>
                           <div className="space-y-2">
-                            <h4 className="text-xs font-medium text-muted-foreground">REQUIRED SKILLS</h4>
-                            <div className="flex flex-wrap gap-2">
+                            <h4 className="text-xs sm:text-sm font-medium text-muted-foreground">REQUIRED SKILLS</h4>
+                            <div className="flex flex-wrap gap-1 sm:gap-2">
                               {match.skills.map((skill) => (
-                                <Badge key={skill} variant="secondary" className="bg-primary/10 text-primary">
+                                <Badge key={skill} variant="secondary" className="text-xs sm:text-sm bg-primary/10 text-primary">
                                   {skill}
                                 </Badge>
                               ))}
@@ -966,20 +954,20 @@ export default function StudentPage() {
                     <div className="flex justify-end">
                       {isInterested ? (
                         <div className="text-center space-y-2">
-                          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                            <Heart className="w-6 h-6 text-green-600 fill-current" />
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                            <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 fill-current" />
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-green-600">Interest Registered!</p>
-                            <p className="text-xs text-muted-foreground">Companies will contact you soon</p>
+                            <p className="text-sm sm:text-base font-semibold text-green-600">Interest Registered!</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground">Companies will contact you soon</p>
                           </div>
                         </div>
                       ) : (
                         <Button
                           onClick={() => handleInterested(match.id)}
-                          className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground px-6 py-2"
+                          className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground px-4 sm:px-6 text-sm sm:text-base font-semibold rounded-lg"
                         >
-                          <Heart className="w-4 h-4 mr-2" />
+                          <Heart className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                           I'm Interested
                         </Button>
                       )}
@@ -990,33 +978,33 @@ export default function StudentPage() {
             })}
           </div>
 
-          <div className="mt-12 text-center">
+          <div className="mt-8 sm:mt-12 text-center">
             <Card className="bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
-              <CardContent className="p-8">
-                <h2 className="text-2xl font-bold text-foreground mb-4">Ready to Start Your Career Journey?</h2>
-                <p className="text-muted-foreground mb-6">
+              <CardContent className="p-4 sm:p-6 lg:p-8">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground mb-3 sm:mb-4">Ready to Start Your Career Journey?</h2>
+                <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
                   Your interests have been saved. Companies matching your profile will be notified and may reach out to
                   you directly.
                 </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-center">
                   <div>
-                    <div className="text-3xl font-bold text-primary mb-2">
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary mb-2">
                       {careerMatches.reduce((sum, match) => sum + match.openings, 0).toLocaleString()}+
                     </div>
-                    <p className="text-muted-foreground">Total Opportunities</p>
+                    <p className="text-sm sm:text-base text-muted-foreground">Total Opportunities</p>
                   </div>
                   <div>
-                    <div className="text-3xl font-bold text-primary mb-2">{careerMatches.length}</div>
-                    <p className="text-muted-foreground">Career Matches</p>
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary mb-2">{careerMatches.length}</div>
+                    <p className="text-sm sm:text-base text-muted-foreground">Career Matches</p>
                   </div>
                   <div>
-                    <div className="text-3xl font-bold text-primary mb-2">
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary mb-2">
                       {Math.round(
                         careerMatches.reduce((sum, match) => sum + match.fitmentScore, 0) / careerMatches.length,
                       )}
                       %
                     </div>
-                    <p className="text-muted-foreground">Average Fit Score</p>
+                    <p className="text-sm sm:text-base text-muted-foreground">Average Fit Score</p>
                   </div>
                 </div>
               </CardContent>
