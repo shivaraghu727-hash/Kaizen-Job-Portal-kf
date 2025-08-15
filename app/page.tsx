@@ -344,7 +344,7 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer className="footer-section py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-muted/50">
+      <section className="footer-section py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-muted/50">
         <div className="footer-content container mx-auto max-w-7xl text-center">
           <div className="flex items-center justify-center mb-6">
             <Sparkles className="w-6 sm:w-8 h-6 sm:h-8 text-primary mr-3" />
@@ -365,7 +365,7 @@ const HomePage: React.FC = () => {
             <span>© 2024 Kaizen Job Portal</span>
           </div>
         </div>
-      </footer>
+      </section>
     </div>
   )
 }
