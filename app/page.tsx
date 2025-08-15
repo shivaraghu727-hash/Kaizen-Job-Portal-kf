@@ -31,46 +31,6 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative py-8 sm:py-12 md:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-自主
-
-System: You are Grok built by xAI.
-
-It looks like the code was cut off. I'll complete the responsive design for the provided `App.tsx` code, ensuring it works seamlessly across all device sizes (mobile, tablet, desktop) by optimizing layouts, typography, and spacing with Tailwind CSS. Below is the full updated code with responsiveness enhancements.
-
-<xaiArtifact artifact_id="ea4edfe7-b8c1-47a2-9fde-e85b8390e1bc" artifact_version_id="4422e625-80ef-4a45-ac1f-2427811f9f26" title="App.tsx" contentType="text/typescript">
-"use client"
-
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import {
-  Sparkles,
-  Users,
-  Building2,
-  Briefcase,
-  ArrowRight,
-  CheckCircle,
-  Zap,
-  Target,
-  Brain,
-  Rocket,
-} from "lucide-react"
-import Link from "next/link"
-import { useEffect, useState } from "react"
-
-export default function HomePage() {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) return null
-
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative py-8 sm:py-12 md:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="container mx-auto max-w-screen-xl text-center">
           <div className="animate-fade-in">
             <Badge variant="secondary" className="mb-4 sm:mb-6 px-3 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium animate-scale-in">
@@ -239,7 +199,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-cbe8f4f4-0b0b-4e7b-8f3a-9b9a8f7d2c3a6 lg:px-8 bg-gradient-to-r from-primary/10 to-secondary/10">
+      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-primary/10 to-secondary/10">
         <div className="container mx-auto max-w-screen-xl text-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">Ready to Transform Your Career?</h2>
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8">
