@@ -95,6 +95,7 @@ export default function CompanyPage() {
   const [isListening, setIsListening] = useState(false)
   const [voiceSupported, setVoiceSupported] = useState(false)
   const [qrLoading, setQrLoading] = useState<string | null>(null)
+  const [roleSearch, setRoleSearch] = useState("")
   const recognitionRef = useRef<any>(null)
   const { toast } = useToast()
 
@@ -113,6 +114,11 @@ export default function CompanyPage() {
     keySkills: "",
     salary: "",
   })
+
+  // Filter roles based on search input
+  const filteredRoles = ROLES.filter((role) =>
+    role.toLowerCase().includes(roleSearch.toLowerCase())
+  )
 
   useEffect(() => {
     // Check if Web Speech API is supported
@@ -303,6 +309,7 @@ export default function CompanyPage() {
       keySkills: "",
       salary: "",
     })
+    setRoleSearch("")
     toast({
       title: "Form Cleared",
       description: "All fields have been reset.",
@@ -451,6 +458,7 @@ export default function CompanyPage() {
           keySkills: "",
           salary: "",
         })
+        setRoleSearch("")
 
         await loadCompanyJobs(companyData.email)
       } else {
@@ -528,91 +536,89 @@ export default function CompanyPage() {
   // Preview Page
   if (currentView === "preview") {
     return (
-      <div className="min-h-screen bg-background p-4">
-        <div className="absolute top-4 right-4">
+      <div className="min-h-screen bg-background py-6 px-4 sm:px-6 lg:px-8">
+        <div className="fixed top-4 right-4 sm:top-6 sm:right-6">
           <ThemeToggle />
         </div>
 
-        <div className="container mx-auto max-w-4xl py-8">
+        <div className="container mx-auto max-w-screen-xl py-6 sm:py-8">
           <Button
-          onClick={() => setCurrentView("form")}
-          className="inline-flex items-center text-white hover:text-white/80 mb-6 group"
-            >
-        <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
-          Back to Form
+            onClick={() => setCurrentView("form")}
+            className="inline-flex items-center text-primary hover:bg-primary/10 mb-4 sm:mb-6 text-sm sm:text-base font-medium transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2 transition-transform group-hover:-translate-x-1" />
+            Back to Form
           </Button>
 
-          <Card className="shadow-xl border-0 bg-card/50 backdrop-blur-sm">
+          <Card className="shadow-lg border-0 bg-card/80 backdrop-blur-sm rounded-xl">
             <CardHeader>
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                  <Building2 className="w-6 h-6 text-primary" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl">Form Preview</CardTitle>
-                  <CardDescription>Review your company and job details</CardDescription>
+                  <CardTitle className="text-xl sm:text-2xl font-bold">Form Preview</CardTitle>
+                  <CardDescription className="text-sm sm:text-base">Review your company and job details</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {/* Company Information Section */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-foreground flex items-center">
-                    <Building2 className="w-5 h-5 mr-2" />
-                    Company Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="companyName">Company Name</Label>
-                      <p className="text-sm text-foreground">{companyData.companyName || "Not provided"}</p>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="contactPersonName">Contact Person Name</Label>
-                      <p className="text-sm text-foreground">{companyData.contactPersonName || "Not provided"}</p>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Company Email</Label>
-                      <p className="text-sm text-foreground">{companyData.email || "Not provided"}</p>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="contactPersonNumber">Contact Person Number</Label>
-                      <p className="text-sm text-foreground">{companyData.contactPersonNumber || "Not provided"}</p>
-                    </div>
+            <CardContent className="space-y-6 sm:space-y-8">
+              {/* Company Information Section */}
+              <div className="space-y-4">
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground flex items-center">
+                  <Building2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  Company Information
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="companyName" className="text-sm sm:text-base">Company Name</Label>
+                    <p className="text-sm sm:text-base text-foreground">{companyData.companyName || "Not provided"}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="contactPersonName" className="text-sm sm:text-base">Contact Person Name</Label>
+                    <p className="text-sm sm:text-base text-foreground">{companyData.contactPersonName || "Not provided"}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm sm:text-base">Company Email</Label>
+                    <p className="text-sm sm:text-base text-foreground">{companyData.email || "Not provided"}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="contactPersonNumber" className="text-sm sm:text-base">Contact Person Number</Label>
+                    <p className="text-sm sm:text-base text-foreground">{companyData.contactPersonNumber || "Not provided"}</p>
                   </div>
                 </div>
+              </div>
 
-                {/* Job Information Section */}
-                <div className="space-y-4 border-t border-border pt-6">
-                  <h3 className="text-lg font-semibold text-foreground flex items-center">
-                    <Briefcase className="w-5 h-5 mr-2" />
-                    Job Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="title">Job Title</Label>
-                      <p className="text-sm text-foreground">{jobData.title || "Not provided"}</p>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="jobType">Job Type</Label>
-                      <p className="text-sm text-foreground">{jobData.jobType || "Not provided"}</p>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="location">Location</Label>
-                      <p className="text-sm text-foreground">{jobData.location || "Not provided"}</p>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="salary">Salary Range</Label>
-                      <p className="text-sm text-foreground">{jobData.salary || "Not provided"}</p>
-                    </div>
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="keySkills">Key Skills</Label>
-                      <p className="text-sm text-foreground">{jobData.keySkills || "Not provided"}</p>
-                    </div>
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="description">Job Description</Label>
-                      <p className="text-sm text-foreground whitespace-pre-wrap">{jobData.description || "Not provided"}</p>
-                    </div>
+              {/* Job Information Section */}
+              <div className="space-y-4 border-t border-border pt-4 sm:pt-6">
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground flex items-center">
+                  <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  Job Information
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="title" className="text-sm sm:text-base">Job Title</Label>
+                    <p className="text-sm sm:text-base text-foreground">{jobData.title || "Not provided"}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="jobType" className="text-sm sm:text-base">Job Type</Label>
+                    <p className="text-sm sm:text-base text-foreground">{jobData.jobType || "Not provided"}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="location" className="text-sm sm:text-base">Location</Label>
+                    <p className="text-sm sm:text-base text-foreground">{jobData.location || "Not provided"}</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="salary" className="text-sm sm:text-base">Salary Range</Label>
+                    <p className="text-sm sm:text-base text-foreground">{jobData.salary || "Not provided"}</p>
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="keySkills" className="text-sm sm:text-base">Key Skills</Label>
+                    <p className="text-sm sm:text-base text-foreground">{jobData.keySkills || "Not provided"}</p>
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="description" className="text-sm sm:text-base">Job Description</Label>
+                    <p className="text-sm sm:text-base text-foreground whitespace-pre-wrap">{jobData.description || "Not provided"}</p>
                   </div>
                 </div>
               </div>
@@ -623,114 +629,120 @@ export default function CompanyPage() {
     )
   }
 
+  // Dashboard Page
   if (currentView === "dashboard") {
     return (
-      <div className="min-h-screen bg-background p-4">
-        <div className="absolute top-4 right-4">
+      <div className="min-h-screen bg-background py-6 px-4 sm:px-6 lg:px-8">
+        <div className="fixed top-4 right-4 sm:top-6 sm:right-6">
           <ThemeToggle />
         </div>
 
-        <div className="container mx-auto max-w-6xl py-8">
-          <div className="flex justify-between items-center mb-8">
+        <div className="container mx-auto max-w-screen-xl py-6 sm:py-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-foreground">Company Dashboard</h1>
-              <p className="text-muted-foreground">Manage your job postings and view applications</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Company Dashboard</h1>
+              <p className="text-sm sm:text-base text-muted-foreground mt-1">Manage your job postings and view applications</p>
             </div>
-            <div className="flex space-x-4">
-              <Button onClick={() => setCurrentView("form")} className="bg-primary hover:bg-primary/90">
-                <Plus className="w-4 h-4 mr-2" />
+            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 mt-4 sm:mt-0">
+              <Button
+                onClick={() => setCurrentView("form")}
+                className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-4 sm:px-6 py-2 text-sm sm:text-base font-semibold rounded-lg transition-colors"
+              >
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 Post New Job
               </Button>
-              <Button onClick={handleEditCompany} variant="outline">
-                <Edit className="w-4 h-4 mr-2" />
+              <Button
+                onClick={handleEditCompany}
+                variant="outline"
+                className="w-full sm:w-auto border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground px-4 sm:px-6 py-2 text-sm sm:text-base font-semibold rounded-lg transition-colors"
+              >
+                <Edit className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 Edit Company Details
               </Button>
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
             {/* Company Info */}
-            <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm">
+            <Card className="shadow-lg border-0 bg-card/80 backdrop-blur-sm rounded-xl">
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Building2 className="w-5 h-5 mr-2" />
+                <CardTitle className="flex items-center text-lg sm:text-xl font-bold">
+                  <Building2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                   Company Information
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-3 sm:space-y-4">
                 <div className="flex items-center space-x-3">
-                  <Building2 className="w-4 h-4 text-muted-foreground" />
-                  <span className="font-medium">{companyData.companyName}</span>
+                  <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
+                  <span className="text-sm sm:text-base font-medium">{companyData.companyName}</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <User className="w-4 h-4 text-muted-foreground" />
-                  <span>{companyData.contactPersonName}</span>
+                  <User className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
+                  <span className="text-sm sm:text-base">{companyData.contactPersonName}</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Mail className="w-4 h-4 text-muted-foreground" />
-                  <span>{companyData.email}</span>
+                  <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
+                  <span className="text-sm sm:text-base">{companyData.email}</span>
                 </div>
                 {companyData.contactPersonNumber && (
                   <div className="flex items-center space-x-3">
-                    <Phone className="w-4 h-4 text-muted-foreground" />
-                    <span>{companyData.contactPersonNumber}</span>
+                    <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
+                    <span className="text-sm sm:text-base">{companyData.contactPersonNumber}</span>
                   </div>
                 )}
               </CardContent>
             </Card>
 
             {/* Posted Jobs */}
-            <Card className="shadow-lg border-0 bg-card/50 backdrop-blur-sm">
+            <Card className="shadow-lg border-0 bg-card/80 backdrop-blur-sm rounded-xl">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center">
-                    <QrCode className="w-5 h-5 mr-2" />
+                  <CardTitle className="flex items-center text-lg sm:text-xl font-bold">
+                    <QrCode className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                     Posted Jobs
                   </CardTitle>
-                  <Badge variant="secondary">{jobs.length} jobs</Badge>
+                  <Badge variant="secondary" className="text-xs sm:text-sm">{jobs.length} jobs</Badge>
                 </div>
               </CardHeader>
               <CardContent>
                 {jobs.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Briefcase className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>No jobs posted yet</p>
-                    <p className="text-sm">Post your first job to get started</p>
+                  <div className="text-center py-6 sm:py-8 text-muted-foreground">
+                    <Briefcase className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 opacity-50" />
+                    <p className="text-sm sm:text-base">No jobs posted yet</p>
+                    <p className="text-xs sm:text-sm">Post your first job to get started</p>
                   </div>
                 ) : (
-                  <div className="space-y-6 max-h-96 overflow-y-auto">
+                  <div className="space-y-6 max-h-[70vh] overflow-y-auto">
                     {jobs.map((job) => (
                       <div
                         key={job.id}
-                        className="border border-border rounded-lg p-4 hover:shadow-md transition-all duration-300"
+                        className="border border-border rounded-lg p-4 sm:p-6 hover:shadow-md transition-all duration-300"
                       >
-                        <div className="flex justify-between items-start mb-3">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 sm:mb-4">
                           <div>
-                            <h4 className="font-medium text-foreground">{job.title}</h4>
-                            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                              <Badge variant="outline" className="text-xs">
-                                {job.job_type}
-                              </Badge>
-                              {job.location && <span>• {job.location}</span>}
-                              {job.salary && <span>• {job.salary}</span>}
+                            <h4 className="text-base sm:text-lg font-medium text-foreground">{job.title}</h4>
+                            <div className="flex flex-wrap items-center space-x-2 text-xs sm:text-sm text-muted-foreground mt-1">
+                              <Badge variant="outline" className="text-xs">{job.job_type}</Badge>
+                              {job.location && <span className="hidden sm:inline">• {job.location}</span>}
+                              {job.salary && <span className="hidden sm:inline">• {job.salary}</span>}
                             </div>
                           </div>
                           <Badge
                             variant={job.active ? "default" : "secondary"}
-                            className={
+                            className={`mt-2 sm:mt-0 text-xs sm:text-sm ${
                               job.active ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100" : ""
-                            }
+                            }`}
                           >
                             {job.active ? "Active" : "Inactive"}
                           </Badge>
                         </div>
 
-                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{job.description}</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 line-clamp-2">{job.description}</p>
 
                         {job.key_skills && (
-                          <div className="mb-4">
-                            <p className="text-xs font-medium text-muted-foreground mb-2">Required Skills:</p>
-                            <div className="flex flex-wrap gap-1">
+                          <div className="mb-3 sm:mb-4">
+                            <p className="text-xs sm:text-sm font-medium text-muted-foreground mb-2">Required Skills:</p>
+                            <div className="flex flex-wrap gap-1 sm:gap-2">
                               {job.key_skills
                                 .split(",")
                                 .slice(0, 4)
@@ -744,17 +756,17 @@ export default function CompanyPage() {
                         )}
 
                         {/* QR Code Display */}
-                        <div className="mb-4 p-4 bg-white dark:bg-gray-50 rounded-lg border">
+                        <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-white dark:bg-gray-50 rounded-lg border">
                           <div className="flex items-center justify-between mb-2">
-                            <h5 className="font-medium text-sm text-gray-900">QR Code</h5>
+                            <h5 className="font-medium text-xs sm:text-sm text-gray-900">QR Code</h5>
                             <div className="flex space-x-2">
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => testQRCode(job.id, job.title)}
-                                className="text-xs"
+                                className="text-xs border-gray-300 hover:bg-gray-100"
                               >
-                                <Eye className="w-3 h-3 mr-1" />
+                                <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                                 Test
                               </Button>
                               <Button
@@ -762,12 +774,12 @@ export default function CompanyPage() {
                                 variant="outline"
                                 onClick={() => downloadQR(job.qr_code_url, job.title, job.id)}
                                 disabled={qrLoading === job.id}
-                                className="text-xs"
+                                className="text-xs border-gray-300 hover:bg-gray-100"
                               >
                                 {qrLoading === job.id ? (
-                                  <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                                  <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 animate-spin" />
                                 ) : (
-                                  <Download className="w-3 h-3 mr-1" />
+                                  <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                                 )}
                                 Download
                               </Button>
@@ -777,9 +789,9 @@ export default function CompanyPage() {
                             <Image
                               src={job.qr_code_url || "/placeholder.svg"}
                               alt={`QR Code for ${job.title}`}
-                              width={150}
-                              height={150}
-                              className="border rounded"
+                              width={120}
+                              height={120}
+                              className="border rounded w-24 h-24 sm:w-32 sm:h-32"
                               onError={(e) => {
                                 console.error("QR Code failed to load:", e)
                               }}
@@ -788,39 +800,39 @@ export default function CompanyPage() {
                         </div>
 
                         {/* Job URL */}
-                        <div className="p-3 bg-muted/50 rounded-lg">
+                        <div className="p-2 sm:p-3 bg-muted/50 rounded-lg">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
-                              <Globe className="w-4 h-4 text-muted-foreground" />
-                              <span className="text-sm font-medium text-muted-foreground">Job URL:</span>
+                              <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
+                              <span className="text-xs sm:text-sm font-medium text-muted-foreground">Job URL:</span>
                             </div>
                             <div className="flex space-x-2">
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => copyToClipboard(job.student_url, "Job URL")}
-                                className="text-xs"
+                                className="text-xs border-gray-300 hover:bg-gray-100"
                               >
-                                <Copy className="w-3 h-3 mr-1" />
+                                <Copy className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                                 Copy
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => window.open(job.student_url, "_blank")}
-                                className="text-xs"
+                                className="text-xs border-gray-300 hover:bg-gray-100"
                               >
-                                <ExternalLink className="w-3 h-3 mr-1" />
+                                <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                                 Open
                               </Button>
                             </div>
                           </div>
-                          <div className="text-xs text-muted-foreground break-all bg-background p-2 rounded border">
+                          <div className="text-xs sm:text-sm text-muted-foreground break-all bg-background p-2 rounded border">
                             {job.student_url}
                           </div>
                         </div>
 
-                        <div className="mt-3 text-xs text-muted-foreground">
+                        <div className="mt-3 text-xs sm:text-sm text-muted-foreground">
                           Posted: {new Date(job.created_at).toLocaleDateString()}
                         </div>
                       </div>
@@ -835,77 +847,81 @@ export default function CompanyPage() {
     )
   }
 
+  // Form Page
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="absolute top-4 right-4">
+    <div className="min-h-screen bg-background py-6 px-4 sm:px-6 lg:px-8">
+      <div className="fixed top-4 right-4 sm:top-6 sm:right-6">
         <ThemeToggle />
       </div>
 
-      <div className="container mx-auto max-w-4xl py-8">
-        <Link href="/" className="inline-flex items-center text-primary hover:text-primary/80 mb-6 group">
-          <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
+      <div className="container mx-auto max-w-screen-xl py-6 sm:py-8">
+        <Link
+          href="/"
+          className="inline-flex items-center text-primary hover:bg-primary/10 mb-4 sm:mb-6 text-sm sm:text-base font-medium transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2 transition-transform group-hover:-translate-x-1" />
           Back to Home
         </Link>
 
-        <Card className="shadow-xl border-0 bg-card/50 backdrop-blur-sm">
+        <Card className="shadow-lg border-0 bg-card/80 backdrop-blur-sm rounded-xl">
           <CardHeader>
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                <Building2 className="w-6 h-6 text-primary" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <Building2 className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-2xl">Company Registration & Job Posting</CardTitle>
-                <CardDescription>Register your company and post a job opportunity</CardDescription>
+                <CardTitle className="text-xl sm:text-2xl font-bold">Company Registration & Job Posting</CardTitle>
+                <CardDescription className="text-sm sm:text-base">Register your company and post a job opportunity</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="manual" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="manual" className="flex items-center space-x-2">
-                  <User className="w-4 h-4" />
+              <TabsList className="grid w-full grid-cols-2 mb-4 sm:mb-6">
+                <TabsTrigger value="manual" className="flex items-center space-x-2 text-sm sm:text-base">
+                  <User className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>Manual Entry</span>
                 </TabsTrigger>
-                <TabsTrigger value="voice" className="flex items-center space-x-2" disabled={!voiceSupported}>
-                  <Mic className="w-4 h-4" />
+                <TabsTrigger value="voice" className="flex items-center space-x-2 text-sm sm:text-base" disabled={!voiceSupported}>
+                  <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>Voice Input</span>
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="voice" className="space-y-6">
                 {voiceSupported ? (
-                  <div className="p-6 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                    <div className="flex items-center space-x-2 mb-4">
-                      <Volume2 className="w-5 h-5 text-blue-600" />
-                      <h4 className="font-semibold text-blue-900 dark:text-blue-100">Smart Voice Input</h4>
+                  <div className="p-4 sm:p-6 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div className="flex items-center space-x-2 mb-3 sm:mb-4">
+                      <Volume2 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                      <h4 className="text-base sm:text-lg font-semibold text-blue-900 dark:text-blue-100">Smart Voice Input</h4>
                     </div>
-                    <p className="text-sm text-blue-700 dark:text-blue-200 mb-4">
+                    <p className="text-xs sm:text-sm text-blue-700 dark:text-blue-200 mb-3 sm:mb-4">
                       Speak naturally about your company and job details. Our AI will automatically extract and fill the
                       form fields.
                     </p>
-                    <div className="flex space-x-3 mb-4">
+                    <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 mb-3 sm:mb-4">
                       <Button
                         type="button"
                         onClick={isListening ? stopVoiceInput : startVoiceInput}
-                        className={`flex-1 ${
+                        className={`flex-1 text-sm sm:text-base font-semibold rounded-lg transition-colors ${
                           isListening
                             ? "bg-red-500 hover:bg-red-600 text-white"
                             : "bg-blue-500 hover:bg-blue-600 text-white"
                         }`}
                       >
-                        {isListening ? <MicOff className="w-4 h-4 mr-2" /> : <Mic className="w-4 h-4 mr-2" />}
+                        {isListening ? <MicOff className="w-4 h-4 sm:w-5 sm:h-5 mr-2" /> : <Mic className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />}
                         {isListening ? "Stop Voice Input" : "Start Voice Input"}
                       </Button>
                       <Button
                         type="button"
                         onClick={clearForm}
                         variant="outline"
-                        className="border-gray-300 bg-transparent"
+                        className="w-full sm:w-auto border-2 border-gray-300 text-gray-700 hover:bg-gray-100 text-sm sm:text-base font-semibold rounded-lg transition-colors"
                       >
                         Clear Form
                       </Button>
                     </div>
-                    <div className="text-xs text-blue-600 dark:text-blue-300 space-y-2">
+                    <div className="text-xs sm:text-sm text-blue-600 dark:text-blue-300 space-y-2">
                       <p>
                         <strong>💡 Example phrases you can say:</strong>
                       </p>
@@ -927,8 +943,8 @@ export default function CompanyPage() {
                   </div>
                 ) : (
                   <Alert>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
+                    <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <AlertDescription className="text-xs sm:text-sm">
                       Voice input is not supported in your browser. Please use manual entry.
                     </AlertDescription>
                   </Alert>
@@ -937,47 +953,49 @@ export default function CompanyPage() {
 
               <TabsContent value="manual" className="space-y-6">
                 <Alert>
-                  <CheckCircle className="h-4 w-4" />
-                  <AlertDescription>
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <AlertDescription className="text-xs sm:text-sm">
                     Fill in your company details below. All job fields are required for posting.
                   </AlertDescription>
                 </Alert>
               </TabsContent>
 
               {/* Form Fields - Shown in both tabs */}
-              <form onSubmit={handleCompanyRegistration} className="space-y-6 mt-6">
+              <form onSubmit={handleCompanyRegistration} className="space-y-6 sm:space-y-8 mt-4 sm:mt-6">
                 {/* Company Information Section */}
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-foreground flex items-center">
-                    <Building2 className="w-5 h-5 mr-2" />
+                  <h3 className="text-lg sm:text-xl font-semibold text-foreground flex items-center">
+                    <Building2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                     Company Information
                   </h3>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="companyName">Company Name *</Label>
+                      <Label htmlFor="companyName" className="text-sm sm:text-base">Company Name *</Label>
                       <Input
                         id="companyName"
                         value={companyData.companyName}
                         onChange={(e) => setCompanyData((prev) => ({ ...prev, companyName: e.target.value }))}
                         placeholder="Enter company name"
                         required
+                        className="text-sm sm:text-base rounded-lg border-gray-300"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="contactPersonName">Contact Person Name *</Label>
+                      <Label htmlFor="contactPersonName" className="text-sm sm:text-base">Contact Person Name *</Label>
                       <Input
                         id="contactPersonName"
                         value={companyData.contactPersonName}
                         onChange={(e) => setCompanyData((prev) => ({ ...prev, contactPersonName: e.target.value }))}
                         placeholder="Enter contact person name"
                         required
+                        className="text-sm sm:text-base rounded-lg border-gray-300"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="email">Company Email *</Label>
+                      <Label htmlFor="email" className="text-sm sm:text-base">Company Email *</Label>
                       <Input
                         id="email"
                         type="email"
@@ -985,118 +1003,150 @@ export default function CompanyPage() {
                         onChange={(e) => setCompanyData((prev) => ({ ...prev, email: e.target.value }))}
                         placeholder="company@example.com"
                         required
+                        className="text-sm sm:text-base rounded-lg border-gray-300"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="contactPersonNumber">Contact Person Number</Label>
+                      <Label htmlFor="contactPersonNumber" className="text-sm sm:text-base">Contact Person Number</Label>
                       <Input
                         id="contactPersonNumber"
                         value={companyData.contactPersonNumber}
                         onChange={(e) => setCompanyData((prev) => ({ ...prev, contactPersonNumber: e.target.value }))}
-                        placeholder="Enter phone number"
+                        placeholder="Enter phone number (e.g., 9876543210)"
+                        className="text-sm sm:text-base rounded-lg border-gray-300"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Job Information Section */}
-                <div className="space-y-4 border-t border-border pt-6">
-                  <h3 className="text-lg font-semibold text-foreground flex items-center">
-                    <Briefcase className="w-5 h-5 mr-2" />
+                <div className="space-y-4 border-t border-border pt-4 sm:pt-6">
+                  <h3 className="text-lg sm:text-xl font-semibold text-foreground flex items-center">
+                    <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                     Job Information
                   </h3>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="title">Job Title *</Label>
+                      <Label htmlFor="title" className="text-sm sm:text-base">Job Title *</Label>
+                      <Input
+                        id="title"
+                        value={roleSearch}
+                        onChange={(e) => {
+                          setRoleSearch(e.target.value)
+                          setJobData((prev) => ({ ...prev, title: e.target.value }))
+                        }}
+                        placeholder="Type to search job titles (e.g., Software)"
+                        required
+                        className="text-sm sm:text-base rounded-lg border-gray-300"
+                      />
                       <Select
                         value={jobData.title}
-                        onValueChange={(value) => setJobData((prev) => ({ ...prev, title: value }))}
+                        onValueChange={(value) => {
+                          setJobData((prev) => ({ ...prev, title: value }))
+                          setRoleSearch(value)
+                        }}
                         required
                       >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select job title" />
+                        <SelectTrigger className="text-sm sm:text-base rounded-lg border-gray-300">
+                          <SelectValue placeholder="Select or confirm job title" />
                         </SelectTrigger>
                         <SelectContent className="max-h-60 overflow-y-auto">
-                          {ROLES.map((role) => (
-                            <SelectItem key={role} value={role}>
-                              {role}
+                          {filteredRoles.length > 0 ? (
+                            filteredRoles.map((role) => (
+                              <SelectItem key={role} value={role} className="text-sm sm:text-base">
+                                {role}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value={roleSearch} className="text-sm sm:text-base">
+                              {roleSearch || "No matching roles"}
                             </SelectItem>
-                          ))}
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="jobType">Job Type *</Label>
+                      <Label htmlFor="jobType" className="text-sm sm:text-base">Job Type *</Label>
                       <Select
                         value={jobData.jobType}
                         onValueChange={(value) => setJobData((prev) => ({ ...prev, jobType: value }))}
                         required
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="text-sm sm:text-base rounded-lg border-gray-300">
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="internship">Internship</SelectItem>
-                          <SelectItem value="full-time">Full-time</SelectItem>
-                          <SelectItem value="part-time">Part-time</SelectItem>
-                          <SelectItem value="contract">Contract</SelectItem>
+                          <SelectItem value="internship" className="text-sm sm:text-base">Internship</SelectItem>
+                          <SelectItem value="full-time" className="text-sm sm:text-base">Full-time</SelectItem>
+                          <SelectItem value="part-time" className="text-sm sm:text-base">Part-time</SelectItem>
+                          <SelectItem value="contract" className="text-sm sm:text-base">Contract</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="location">Location *</Label>
+                      <Label htmlFor="location" className="text-sm sm:text-base">Location *</Label>
                       <Input
                         id="location"
                         value={jobData.location}
                         onChange={(e) => setJobData((prev) => ({ ...prev, location: e.target.value }))}
                         placeholder="e.g. Remote, Mumbai, Bangalore"
                         required
+                        className="text-sm sm:text-base rounded-lg border-gray-300"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="salary">Salary Range *</Label>
+                      <Label htmlFor="salary" className="text-sm sm:text-base">Salary Range *</Label>
                       <Input
                         id="salary"
                         value={jobData.salary}
                         onChange={(e) => setJobData((prev) => ({ ...prev, salary: e.target.value }))}
-                        placeholder="e.g. ₹50,000 - ₹70,000"
+                        placeholder="e.g. ₹50,000 - ₹70,000 or $60,000/year"
                         required
+                        className="text-sm sm:text-base rounded-lg border-gray-300"
                       />
                     </div>
 
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="keySkills">Key Skills *</Label>
+                    <div className="space-y-2 sm:col-span-2">
+                      <Label htmlFor="keySkills" className="text-sm sm:text-base">Key Skills *</Label>
                       <Input
                         id="keySkills"
                         value={jobData.keySkills}
                         onChange={(e) => setJobData((prev) => ({ ...prev, keySkills: e.target.value }))}
                         placeholder="e.g. React, Node.js, Python, JavaScript"
                         required
+                        className="text-sm sm:text-base rounded-lg border-gray-300"
                       />
                     </div>
 
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="description">Job Description *</Label>
+                    <div className="space-y-2 sm:col-span-2">
+                      <Label htmlFor="description" className="text-sm sm:text-base">Job Description *</Label>
                       <Textarea
                         id="description"
                         value={jobData.description}
                         onChange={(e) => setJobData((prev) => ({ ...prev, description: e.target.value }))}
                         placeholder="Describe the role, responsibilities, and requirements..."
-                        rows={4}
+                        rows={5}
                         required
+                        className="text-sm sm:text-base rounded-lg border-gray-300"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Submit Buttons */}
-                <div className="flex justify-end space-x-4 pt-6 border-t border-border">
-                  <Button type="button" variant="outline" onClick={clearForm} disabled={isSubmitting}>
+                <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-4 sm:pt-6 border-t border-border">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={clearForm}
+                    disabled={isSubmitting}
+                    className="w-full sm:w-auto border-2 border-gray-300 text-gray-700 hover:bg-gray-100 text-sm sm:text-base font-semibold rounded-lg transition-colors"
+                  >
                     Clear Form
                   </Button>
                   <Button
@@ -1104,24 +1154,24 @@ export default function CompanyPage() {
                     variant="outline"
                     onClick={() => setCurrentView("preview")}
                     disabled={isSubmitting}
-                    className="flex items-center"
+                    className="w-full sm:w-auto border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground text-sm sm:text-base font-semibold rounded-lg transition-colors"
                   >
-                    <Eye className="w-4 h-4 mr-2" />
+                    <Eye className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                     Preview
                   </Button>
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="bg-primary hover:bg-primary/90 min-w-[200px]"
+                    className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-6 sm:px-8 py-2 text-sm sm:text-base font-semibold rounded-lg transition-colors"
                   >
                     {isSubmitting ? (
                       <>
-                        <Loader2 className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                        <Loader2 className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white mr-2" />
                         Processing...
                       </>
                     ) : (
                       <>
-                        <CheckCircle className="w-4 h-4 mr-2" />
+                        <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                         {companyData.companyName ? "Post Job" : "Register & Post Job"}
                       </>
                     )}
