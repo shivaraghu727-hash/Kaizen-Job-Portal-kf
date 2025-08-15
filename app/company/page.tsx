@@ -36,7 +36,6 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { ThemeToggle } from "@/components/theme-toggle"
 
 // Define roles from Roles.xlsx
 const ROLES = [
@@ -537,10 +536,6 @@ export default function CompanyPage() {
   if (currentView === "preview") {
     return (
       <div className="min-h-screen bg-background py-6 px-4 sm:px-6 lg:px-8">
-        <div className="fixed top-4 right-4 sm:top-6 sm:right-6">
-          <ThemeToggle />
-        </div>
-
         <div className="container mx-auto max-w-screen-xl py-6 sm:py-8">
           <Button
             onClick={() => setCurrentView("form")}
@@ -633,10 +628,6 @@ export default function CompanyPage() {
   if (currentView === "dashboard") {
     return (
       <div className="min-h-screen bg-background py-6 px-4 sm:px-6 lg:px-8">
-        <div className="fixed top-4 right-4 sm:top-6 sm:right-6">
-          <ThemeToggle />
-        </div>
-
         <div className="container mx-auto max-w-screen-xl py-6 sm:py-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8">
             <div>
@@ -850,10 +841,6 @@ export default function CompanyPage() {
   // Form Page
   return (
     <div className="min-h-screen bg-background py-6 px-4 sm:px-6 lg:px-8">
-      <div className="fixed top-4 right-4 sm:top-6 sm:right-6">
-        <ThemeToggle />
-      </div>
-
       <div className="container mx-auto max-w-screen-xl py-6 sm:py-8">
         <Link
           href="/"
