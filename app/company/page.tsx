@@ -1087,7 +1087,7 @@ export default function CompanyPage() {
                       <Label htmlFor="jobType" className="text-xs sm:text-sm">Job Type *</Label>
                       <Select
                         value={jobData.jobType}
-                        onValueChange=(value) => setJobData((prev) => ({ ...prev, jobType: value })))
+                        onValueChange={(value) => setJobData((prev) => ({ ...prev, jobType: value }))}
                         required
                       >
                         <SelectTrigger className="text-xs sm:text-sm rounded-lg border-gray-300 focus:ring-2 focus:ring-primary">
@@ -1107,7 +1107,7 @@ export default function CompanyPage() {
                       <Input
                         id="location"
                         value={jobData.location}
-                        onChange=(e) => setJobData((prev) => ({ ...prev, location: e.target.value })))
+                        onChange={(e) => setJobData((prev) => ({ ...prev, location: e.target.value }))}
                         placeholder="e.g. Remote, Mumbai, Bangalore"
                         required
                         className="text-xs sm:text-sm rounded-lg border-gray-300 focus:ring-2 focus:ring-primary"
@@ -1119,7 +1119,7 @@ export default function CompanyPage() {
                       <Input
                         id="salary"
                         value={jobData.salary}
-                        onChange=(e) => setJobData((prev) => ({ ...prev, salary: e.target.value })))
+                        onChange={(e) => setJobData((prev) => ({ ...prev, salary: e.target.value }))}
                         placeholder="e.g. ₹50,000 - ₹70,000 or $60,000/year"
                         required
                         className="text-xs sm:text-sm rounded-lg border-gray-300 focus:ring-2 focus:ring-primary"
@@ -1131,7 +1131,7 @@ export default function CompanyPage() {
                       <Input
                         id="keySkills"
                         value={jobData.keySkills}
-                        onChange=(e) => setJobData((prev) => ({ ...prev, keySkills: e.target.value })))
+                        onChange={(e) => setJobData((prev) => ({ ...prev, keySkills: e.target.value }))}
                         placeholder="e.g. React, Node.js, Python, JavaScript"
                         required
                         className="text-xs sm:text-sm rounded-lg border-gray-300 focus:ring-2 focus:ring-primary"
@@ -1143,7 +1143,7 @@ export default function CompanyPage() {
                       <Textarea
                         id="description"
                         value={jobData.description}
-                        onChange=(e) => setJobData((prev) => ({ ...prev, description: e.target.value })))
+                        onChange={(e) => setJobData((prev) => ({ ...prev, description: e.target.value }))}
                         placeholder="Describe the role, responsibilities, and requirements..."
                         rows={4}
                         required
